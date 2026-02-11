@@ -12,6 +12,32 @@ use Illuminate\Support\Facades\DB;
 class TransaksiController extends Controller
 {
     // 1. Menambahkan alat ke "Keranjang" (Session)
+    public function index()
+    {
+        $user_id = auth()->id();
+
+        // Ambil data statistik untuk dashboard
+        $total_alat = Alat::where('stok', '>', 0)->count();
+        $pinjam_pending = Peminjaman::where('user_id', $user_id)
+                            ->where('status', 'menunggu')->count();
+        $pinjam_aktif = Peminjaman::where('user_id', $user_id)
+                            ->where('status', 'disetujui')->count();
+        
+        // Ambil riwayat terbaru
+        $recent_orders = Peminjaman::with('detailPeminjaman.alat')
+                            ->where('user_id', $user_id)
+                            ->latest()
+                            ->take(5)
+                            ->get();
+
+        return view('peminjam.dashboard', compact(
+            'total_alat', 
+            'pinjam_pending', 
+            'pinjam_aktif', 
+            'recent_orders'
+        ));
+    }
+    
     public function addToCart(Request $request)
     {
         $request->validate([

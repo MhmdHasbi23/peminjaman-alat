@@ -26,6 +26,11 @@ class Peminjaman extends Model
 
     // Relasi tetap sama...
     public function user() { return $this->belongsTo(User::class); }
+    public function petugas()
+    {
+        // 'petugas_id' adalah nama kolom di tabel peminjaman yang menyimpan ID petugas/admin
+        return $this->belongsTo(\App\Models\User::class, 'petugas_id');
+    }
     public function alat() {
         return $this->belongsTo(Alat::class, 'alat_id');
     }
@@ -33,4 +38,10 @@ class Peminjaman extends Model
         return $this->hasMany(DetailPeminjaman::class, 'peminjaman_id');
     }
     public function pengembalian() { return $this->hasOne(Pengembalian::class); }
+    public function logs()
+    {
+        // Jika log mencatat berdasarkan kode_peminjaman
+        return $this->hasMany(\App\Models\ActivityLog::class, 'deskripsi', 'kode_peminjaman')
+                    ->orWhere('deskripsi', 'like', '%' . $this->kode_peminjaman . '%');
+    }
 }

@@ -9,16 +9,16 @@ use Illuminate\Http\Request;
 
 class LaporanController extends Controller
 {
+    // app/Http/Controllers/Petugas/LaporanController.php
     public function index(Request $request)
     {
-        // Ambil input tanggal dari filter
         $tgl_mulai = $request->tgl_mulai;
         $tgl_selesai = $request->tgl_selesai;
 
-        // Query dasar
-        $query = Peminjaman::with(['user', 'alat'])->where('status', 'selesai');
+        // Ambil data Peminjaman yang sudah 'selesai' beserta rincian alatnya
+        $query = Peminjaman::with(['user', 'detailPeminjaman.alat'])
+                    ->where('status', 'selesai');
 
-        // Jika ada filter tanggal
         if ($tgl_mulai && $tgl_selesai) {
             $query->whereBetween('tgl_kembali_real', [$tgl_mulai, $tgl_selesai]);
         }

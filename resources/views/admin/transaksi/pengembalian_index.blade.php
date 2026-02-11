@@ -18,7 +18,7 @@
                         Peminjam</th>
                     <th
                         style="padding: 15px; text-align: left; color: #1cc88a; font-size: 12px; text-transform: uppercase;">
-                        Alat</th>
+                        Rincian Alat</th>
                     <th
                         style="padding: 15px; text-align: left; color: #1cc88a; font-size: 12px; text-transform: uppercase;">
                         Tgl Kembali</th>
@@ -33,21 +33,33 @@
             <tbody>
                 @forelse($pengembalians as $pk)
                 <tr style="border-bottom: 1px solid #e3e6f0;">
-                    <td style="padding: 15px;">
-                        <span style="font-weight: 600; color: #3a3b45;">{{ $pk->peminjaman->user->name }}</span>
+                    <td style="padding: 15px; vertical-align: top;">
+                        <span
+                            style="font-size: 10px; font-weight: bold; color: #4e73df; display: block;">{{ $pk->peminjaman->kode_peminjaman }}</span>
+                        <span
+                            style="font-weight: 600; color: #3a3b45;">{{ $pk->peminjaman->user->name ?? 'User Tidak Ditemukan' }}</span>
                     </td>
-                    <td style="padding: 15px; color: #6e707e;">{{ $pk->peminjaman->alat->nama_alat }}</td>
-                    <td style="padding: 15px; color: #6e707e;">
-                        {{ \Carbon\Carbon::parse($pk->tgl_kembali_aktual)->format('d M Y') }}</td>
-                    <td style="padding: 15px;">
+                    <td style="padding: 15px; color: #6e707e; vertical-align: top;">
+                        {{-- PERBAIKAN: Looping detailPeminjaman karena data alat ada di tabel detail --}}
+                        <ul style="margin: 0; padding-left: 15px; font-size: 13px;">
+                            @foreach($pk->peminjaman->detailPeminjaman as $detail)
+                            <li>{{ $detail->alat->nama_alat ?? 'Alat Dihapus' }}
+                                <strong>({{ $detail->jumlah }})</strong></li>
+                            @endforeach
+                        </ul>
+                    </td>
+                    <td style="padding: 15px; color: #6e707e; vertical-align: top;">
+                        {{ \Carbon\Carbon::parse($pk->tgl_kembali_aktual)->format('d M Y') }}
+                    </td>
+                    <td style="padding: 15px; vertical-align: top;">
                         <span style="color: {{ $pk->denda > 0 ? '#e74a3b' : '#1cc88a' }}; font-weight: 700;">
                             Rp {{ number_format($pk->denda, 0, ',', '.') }}
                         </span>
                     </td>
-                    <td style="padding: 15px;">
+                    <td style="padding: 15px; vertical-align: top;">
                         <span
                             style="font-size: 11px; background-color: #f1f4f9; padding: 4px 8px; border-radius: 4px; color: #4e73df; font-weight: 600;">
-                            {{ $pk->petugas->name }}
+                            {{ $pk->petugas->name ?? 'Sistem' }}
                         </span>
                     </td>
                 </tr>

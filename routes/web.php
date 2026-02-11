@@ -16,7 +16,7 @@ use App\Http\Controllers\Peminjam\AlatController as AlatUser;
 use App\Http\Controllers\Peminjam\TransaksiController as TransaksiUser;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('login');
 });
 
 /*
@@ -42,31 +42,29 @@ Route::middleware(['auth', 'role:admin'])
     ->group(function () {
 
         // 1. DASHBOARD
-        // Perbaikan: Gunakan satu route dashboard yang mengarah ke Controller agar data statistik muncul
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-        // 2. MASTER DATA (CRUD)
+        // 2. MASTER DATA
         Route::resource('user', UserController::class);
         Route::resource('kategori', KategoriController::class);
         Route::resource('alat', AlatController::class);
         
-        // 3. TRANSAKSI PEMINJAMAN
-        Route::get('/peminjaman', [TransaksiController::class, 'indexPeminjaman'])->name('peminjaman.index');
-        Route::get('/peminjaman/create', [TransaksiController::class, 'createPeminjaman'])->name('peminjaman.create');
-        Route::post('/peminjaman/store', [TransaksiController::class, 'storePeminjaman'])->name('peminjaman.store');
+        // 3. MONITORING & APPROVAL (Mengacu pada TransaksiController Admin)
+        // Menampilkan semua transaksi
+        Route::get('/peminjaman', [TransaksiController::class, 'index'])->name('peminjaman.index');
+        
+        // Menampilkan daftar yang butuh persetujuan
+        Route::get('/peminjaman/approval', [TransaksiController::class, 'indexApproval'])->name('peminjaman.approval');
+        
+        // Aksi Setuju & Tolak (Gunakan POST/PATCH)
+        Route::post('/peminjaman/setujui/{id}', [TransaksiController::class, 'setujui'])->name('peminjaman.setujui');
+        Route::post('/peminjaman/tolak/{id}', [TransaksiController::class, 'tolak'])->name('peminjaman.tolak');
 
-        // 4. TRANSAKSI PENGEMBALIAN (BERBASIS KODE)
-        Route::get('/pengembalian', [TransaksiController::class, 'indexPengembalian'])->name('pengembalian.index');
-        
-        // Perbaikan parameter: Gunakan {kode} agar semua alat dalam satu transaksi bisa dikembalikan sekaligus
-        // Halaman Konfirmasi Denda
-        Route::get('/peminjaman/konfirmasi/{kode}', [TransaksiController::class, 'konfirmasiPengembalian'])->name('peminjaman.konfirmasi');
-        
-        // Proses Simpan Akhir Pengembalian
-        Route::post('/peminjaman/store-pengembalian/{kode}', [TransaksiController::class, 'storePengembalian'])->name('peminjaman.store_pengembalian');
-    
+        // 4. DETAIL & HAPUS
+        Route::get('/peminjaman/detail/{id}', [TransaksiController::class, 'show'])->name('peminjaman.show');
+        Route::delete('/peminjaman/hapus/{id}', [TransaksiController::class, 'destroy'])->name('peminjaman.destroy');
+
         // 5. LOG AKTIVITAS
-        // Perbaikan: Sesuaikan nama method index agar sinkron dengan ActivityLogController
         Route::get('/log-aktivitas', [ActivityLogController::class, 'index'])->name('log.index');
 });
 
@@ -94,7 +92,7 @@ Route::middleware(['auth', 'role:petugas'])
         Route::get('/pengembalian/cek/{id}', [TransaksiPetugas::class, 'cekDenda'])->name('pengembalian.cek');
     
     // Tahap 2: Proses Simpan ke Database
-        Route::post('/pengembalian/simpan/{id}', [TransaksiController::class, 'simpanPengembalian'])->name('pengembalian.simpan');
+        Route::post('/pengembalian/simpan/{id}', [TransaksiPetugas::class, 'simpanPengembalian'])->name('pengembalian.simpan');
         Route::get('/laporan', [LaporanPetugas::class, 'index'])->name('laporan.index');
         Route::get('/laporan/cetak', [LaporanPetugas::class, 'cetakPdf'])->name('laporan.cetak');
 });
@@ -107,9 +105,7 @@ Route::middleware(['auth', 'role:peminjam'])
     ->name('peminjam.')
     ->group(function () {
 
-        Route::get('/dashboard', function () {
-            return view('peminjam.dashboard');
-        })->name('dashboard');
+        Route::get('/dashboard', [TransaksiUser::class, 'index'])->name('dashboard');
 
         // Katalog Alat
         Route::get('/daftar-alat', [AlatUser::class, 'index'])->name('alat.index');

@@ -111,63 +111,78 @@ class TransaksiController extends Controller
     // Tahap 1: Halaman Kalkulasi (Menghitung denda sebelum disimpan)
     public function cekDenda($id)
     {
-        $peminjaman = Peminjaman::with(['user', 'alat'])->findOrFail($id);
+        // Mengambil data peminjaman beserta detail alatnya
+        $peminjaman = Peminjaman::with(['user', 'detailPeminjaman.alat'])->findOrFail($id);
         
-        $tgl_kembali_real = now(); 
-        $tgl_seharusnya = \Carbon\Carbon::parse($peminjaman->tgl_kembali_rencana);
+        // Gunakan startOfDay agar perhitungan selisih jam tidak mengganggu hitungan hari
+        $tgl_kembali_real = now()->startOfDay(); 
+        $tgl_seharusnya = \Carbon\Carbon::parse($peminjaman->tgl_kembali_rencana)->startOfDay();
         
         $hari_terlambat = 0;
-        $total_denda = 0;
-        $tarif_denda = 5000; // Sesuaikan tarif denda per hari di sini
+        $denda_terlambat = 0;
+        $tarif_denda = 5000; 
 
+        // Cek jika tanggal kembali aktual lebih besar (melewati) tanggal seharusnya
         if ($tgl_kembali_real->gt($tgl_seharusnya)) {
-            // diffInDays menghitung selisih hari secara bulat
-            $hari_terlambat = $tgl_kembali_real->diffInDays($tgl_seharusnya);
-            $total_denda = $hari_terlambat * $tarif_denda;
+            /**
+             * PERBAIKAN UTAMA:
+             * Tambahkan parameter 'true' pada diffInDays agar hasilnya ABSOLUT (selalu positif)
+             */
+            $hari_terlambat = $tgl_kembali_real->diffInDays($tgl_seharusnya, true);
+            $denda_terlambat = $hari_terlambat * $tarif_denda;
         }
 
         return view('petugas.pengembalian.cek_denda', compact(
-            'peminjaman', 'tgl_kembali_real', 'hari_terlambat', 'total_denda'
+            'peminjaman', 'tgl_kembali_real', 'hari_terlambat', 'denda_terlambat'
         ));
     }
 
     // Tahap 2: Eksekusi Simpan ke Database
+    // Pastikan nama method-nya persis seperti ini
     public function simpanPengembalian(Request $request, $id)
     {
-        // 1. Ambil data Header Peminjaman beserta rincian alatnya
+        // Ambil data Header Peminjaman beserta rincian alatnya
         $peminjaman = Peminjaman::with('detailPeminjaman.alat')->findOrFail($id);
 
         try {
-            DB::beginTransaction(); // Menjamin konsistensi data
+            DB::beginTransaction();
 
-            // 2. Update status Header Peminjaman menjadi 'selesai'
+            // Ambil denda dan catatan dari input manual petugas/admin
+            // Gunakan Math.max untuk memastikan denda tidak negatif
+            $dendaFinal = max(0, $request->input('denda', 0));
+            $catatanManual = $request->input('catatan');
+
+            // 1. Update Header Peminjaman
             $peminjaman->update([
                 'status' => 'selesai',
                 'tgl_kembali_real' => now(),
-                'denda' => $request->input('denda', 0), // Menangkap nilai denda dari form
+                'denda' => $dendaFinal, 
+                'catatan' => $catatanManual,
                 'petugas_id' => auth()->id()
             ]);
 
-            // 3. Kembalikan stok untuk SEMUA alat yang ada di detail peminjaman
+            // 2. Kembalikan stok alat
             foreach ($peminjaman->detailPeminjaman as $detail) {
                 if ($detail->alat) {
                     $detail->alat->increment('stok', $detail->jumlah);
                 }
             }
 
-            // 4. Catat Log Aktivitas Admin
+            // 3. Catat Log Aktivitas
             ActivityLog::create([
                 'user_id' => auth()->id(),
                 'aktivitas' => 'Pengembalian Selesai',
-                'deskripsi' => auth()->user()->name . ' memproses pengembalian kode: ' . $peminjaman->kode_peminjaman,
+                'deskripsi' => auth()->user()->name . ' memproses pengembalian ' . $peminjaman->kode_peminjaman . ' dengan denda Rp ' . number_format($dendaFinal),
                 'ip_address' => request()->ip(),
             ]);
 
-            DB::commit(); // Simpan permanen jika semua berhasil
-            return redirect()->route('admin.peminjaman.index')->with('success', 'Barang berhasil dikembalikan dan stok diperbarui.');
+            DB::commit();
+            
+            // Sesuaikan route redirect ini dengan nama route index validasi Anda
+            return redirect()->route('petugas.pengembalian.index')->with('success', 'Transaksi berhasil diselesaikan.');
 
         } catch (\Exception $e) {
-            DB::rollback(); // Batalkan jika terjadi error
+            DB::rollback();
             return back()->with('error', 'Gagal memproses pengembalian: ' . $e->getMessage());
         }
     }
