@@ -1,92 +1,229 @@
 @extends('layouts.petugas')
 
 @section('content')
-<div class="container-fluid px-4" style="margin-top: 25px; font-family: 'Segoe UI', sans-serif;">
-    <div class="mb-4">
-        <h4 style="font-weight: 700; color: #333; margin: 0;">🔄 Validasi Pengembalian</h4>
-        <p style="color: #858796; font-size: 13px; margin: 0;">Proses pengembalian alat dan verifikasi denda
-            keterlambatan.</p>
+<div style="font-family: 'Inter', sans-serif;">
+
+    <!-- HEADER -->
+    <div style="margin-bottom: 20px;">
+        <h4 style="font-weight: 800; color: #e5e7eb;">
+            🔄 Validasi Pengembalian
+        </h4>
+        <p style="color: #94a3b8; font-size: 0.9rem;">
+            Proses pengembalian alat dan verifikasi denda keterlambatan
+        </p>
     </div>
 
+    <!-- ALERT -->
     @if(session('success'))
-    <div
-        style="background-color: #d4edda; color: #155724; padding: 12px; border-radius: 6px; margin-bottom: 20px; border: 1px solid #c3e6cb;">
-        ✅ {{ session('success') }}
+    <div class="alert-dark success">
+        {{ session('success') }}
     </div>
     @endif
 
-    <div
-        style="background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); overflow: hidden; border: 1px solid #e3e6f0;">
-        <table style="width: 100%; border-collapse: collapse;">
-            <thead style="background-color: #f8f9fc; border-bottom: 2px solid #e3e6f0;">
+    <!-- TABLE -->
+    <div class="table-dark">
+
+        <table>
+            <thead>
                 <tr>
-                    <th
-                        style="padding: 15px; text-align: left; color: #4e73df; font-size: 12px; text-transform: uppercase;">
-                        Peminjam</th>
-                    <th
-                        style="padding: 15px; text-align: left; color: #4e73df; font-size: 12px; text-transform: uppercase;">
-                        Daftar Alat (Qty)</th>
-                    <th
-                        style="padding: 15px; text-align: left; color: #4e73df; font-size: 12px; text-transform: uppercase;">
-                        Batas Kembali</th>
-                    <th
-                        style="padding: 15px; text-align: center; color: #4e73df; font-size: 12px; text-transform: uppercase;">
-                        Aksi</th>
+                    <th>Peminjam</th>
+                    <th>Daftar Alat</th>
+                    <th>Batas Kembali</th>
+                    <th style="text-align:center;">Aksi</th>
                 </tr>
             </thead>
+
             <tbody>
                 @forelse($peminjamans as $p)
-                <tr style="border-bottom: 1px solid #e3e6f0;">
-                    <td style="padding: 15px;">
-                        <span style="font-weight: 600; color: #3a3b45;">{{ $p->user->name }}</span><br>
-                        <span
-                            style="background: #e8f5e9; color: #2e7d32; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700;">
-                            {{ $p->kode_peminjaman }}
-                        </span>
+                <tr>
+
+                    <!-- USER -->
+                    <td>
+                        <div class="user">
+                            <div class="avatar">
+                                {{ strtoupper(substr($p->user->name,0,1)) }}
+                            </div>
+                            <div>
+                                <div class="name">{{ $p->user->name }}</div>
+                                <div class="kode">{{ $p->kode_peminjaman }}</div>
+                            </div>
+                        </div>
                     </td>
-                    <td style="padding: 15px;">
-                        {{-- PERBAIKAN: Melakukan looping detailPeminjaman karena satu transaksi bisa banyak alat --}}
-                        <ul style="margin: 0; padding-left: 15px; color: #4e73df; font-size: 13px;">
-                            @foreach($p->detailPeminjaman as $detail)
-                            <li>
-                                <strong>{{ $detail->alat->nama_alat ?? 'Alat Dihapus' }}</strong>
-                                <span style="color: #333;">({{ $detail->jumlah }} unit)</span>
-                            </li>
-                            @endforeach
-                        </ul>
+
+                    <!-- ALAT -->
+                    <td>
+                        @foreach($p->detailPeminjaman as $detail)
+                        <div class="alat-item">
+                            <span>{{ $detail->alat->nama_alat ?? 'Alat Dihapus' }}</span>
+                            <b>{{ $detail->jumlah }} unit</b>
+                        </div>
+                        @endforeach
                     </td>
-                    <td style="padding: 15px;">
-                        <div
-                            style="color: {{ \Carbon\Carbon::parse($p->tgl_kembali_rencana)->isPast() ? '#e74a3b' : '#3a3b45' }}; font-weight: 600;">
+
+                    <!-- TANGGAL -->
+                    <td>
+                        @php
+                        $terlambat = \Carbon\Carbon::parse($p->tgl_kembali_rencana)->isPast();
+                        @endphp
+
+                        <div class="tanggal {{ $terlambat ? 'merah' : '' }}">
                             {{ \Carbon\Carbon::parse($p->tgl_kembali_rencana)->format('d M Y') }}
                         </div>
-                        @if(\Carbon\Carbon::parse($p->tgl_kembali_rencana)->isPast())
-                        <small
-                            style="color: white; background: #e74a3b; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 700;">TERLAMBAT</small>
+
+                        @if($terlambat)
+                        <span class="badge-terlambat">TERLAMBAT</span>
                         @endif
                     </td>
-                    <td style="padding: 15px; text-align: center;">
-                        <a href="{{ route('petugas.pengembalian.cek', $p->id) }}"
-                            style="background-color: #4e73df; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-weight: 700; font-size: 12px; display: inline-block; transition: 0.3s;">
-                            <i class="fas fa-calculator"></i> Hitung Denda & Kembali
+
+                    <!-- AKSI -->
+                    <td class="center">
+                        <a href="{{ route('petugas.pengembalian.cek', $p->id) }}" class="btn-aksi">
+                            <i class="fas fa-calculator"></i> Proses
                         </a>
                     </td>
+
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="4" style="padding: 60px; text-align: center; color: #999;">
-                        <i class="fas fa-box-open" style="font-size: 30px; margin-bottom: 10px; display: block;"></i>
-                        Tidak ada alat yang sedang dipinjam saat ini.
+                    <td colspan="4" style="text-align:center; padding:60px;">
+                        <i class="fas fa-box-open" style="font-size:40px; color:#64748b;"></i>
+                        <p style="color:#94a3b8;">Tidak ada alat dipinjam</p>
                     </td>
                 </tr>
                 @endforelse
             </tbody>
+
         </table>
+
     </div>
 
-    {{-- Link Pagination --}}
-    <div style="margin-top: 20px;">
+    <!-- PAGINATION -->
+    <div style="margin-top:20px;">
         {{ $peminjamans->links() }}
     </div>
+
 </div>
+
+<!-- STYLE -->
+<style>
+.table-dark {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* TABLE */
+table {
+    width: 100%;
+}
+
+th {
+    padding: 15px;
+    text-align: left;
+    font-size: 11px;
+    color: #64748b;
+    text-transform: uppercase;
+}
+
+td {
+    padding: 15px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+tr:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+/* USER */
+.user {
+    display: flex;
+    align-items: center;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+}
+
+.name {
+    font-weight: 700;
+    color: #e5e7eb;
+}
+
+.kode {
+    font-size: 12px;
+    color: #60a5fa;
+}
+
+/* ALAT */
+.alat-item {
+    display: flex;
+    justify-content: space-between;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 5px 10px;
+    border-radius: 8px;
+    margin-bottom: 5px;
+    font-size: 12px;
+}
+
+/* TANGGAL */
+.tanggal {
+    font-size: 13px;
+    color: #94a3b8;
+}
+
+.merah {
+    color: #f87171;
+    font-weight: 700;
+}
+
+/* BADGE */
+.badge-terlambat {
+    background: #7f1d1d;
+    color: white;
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-weight: 700;
+}
+
+/* BUTTON */
+.center {
+    text-align: center;
+}
+
+.btn-aksi {
+    background: #1e3a8a;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.btn-aksi:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.2);
+}
+
+/* ALERT */
+.alert-dark {
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+.success {
+    background: #064e3b;
+    color: #6ee7b7;
+}
+</style>
 @endsection

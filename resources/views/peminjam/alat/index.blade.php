@@ -1,116 +1,287 @@
 @extends('layouts.peminjam')
 
 @section('content')
-<div class="container-fluid px-4" style="margin-top: 25px; font-family: sans-serif;">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h4 style="font-weight: 700; color: #333; margin: 0;">🛠️ Katalog Alat Tersedia</h4>
-            <p style="color: #858796; font-size: 13px; margin: 0;">Pilih beberapa alat dan masukkan ke daftar pinjam.
-            </p>
+<div class="container-fluid px-4 katalog-wrapper">
 
-            @if(session('cart') && count(session('cart')) > 0)
-            <a href="{{ route('peminjam.checkout') }}" class="btn btn-sm btn-success mt-2"
-                style="border-radius: 20px; font-weight: 600;">
-                <i class="fas fa-shopping-basket"></i> Lihat Daftar Pinjam ({{ count(session('cart')) }} Item)
-            </a>
-            @endif
-        </div>
+    {{-- HEADER --}}
+    <div class="header-box">
+        <h4 class="title">🛠️ Katalog Alat Tersedia</h4>
+        <p class="subtitle">Pilih alat yang ingin kamu pinjam dengan mudah dan cepat.</p>
 
-        <form action="{{ route('peminjam.alat.index') }}" method="GET" style="display: flex; gap: 8px;">
-            <input type="text" name="search" placeholder="Cari alat..." value="{{ request('search') }}"
-                style="padding: 10px 15px; border: 1px solid #d1d3e2; border-radius: 8px; outline: none; width: 250px; font-size: 14px;">
-            <button type="submit"
-                style="background: #4e73df; color: white; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; transition: 0.3s;">
-                <i class="fas fa-search"></i>
-            </button>
+        @if(session('cart') && count(session('cart')) > 0)
+        <a href="{{ route('peminjam.checkout') }}" class="btn-cart">
+            <i class="fas fa-shopping-basket"></i>
+            Daftar Pinjam ({{ count(session('cart')) }})
+        </a>
+        @endif
+    </div>
+
+    {{-- SEARCH (DIPISAH CARD SENDIRI) --}}
+    <div class="glass-card search-card">
+        <form action="{{ route('peminjam.alat.index') }}" method="GET" class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" name="search" placeholder="Cari alat berdasarkan nama atau kategori..." value="{{ request('search') }}">
+            <button type="submit">Cari</button>
         </form>
     </div>
 
+    {{-- ALERT --}}
     @if(session('success'))
-    <div
-        style="background-color: #d4edda; color: #155724; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #c3e6cb; font-size: 14px;">
-        <i class="fas fa-check-circle"></i> {{ session('success') }}
-    </div>
+    <div class="alert-soft">{{ session('success') }}</div>
     @endif
 
     @if(session('error'))
-    <div
-        style="background-color: #f8d7da; color: #721c24; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #f5c6cb; font-size: 14px;">
-        <i class="fas fa-exclamation-triangle"></i> {{ session('error') }}
-    </div>
+    <div class="alert-soft error">{{ session('error') }}</div>
     @endif
 
-    <div
-        style="background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); overflow: hidden; border: 1px solid #e3e6f0;">
-        <table style="width: 100%; border-collapse: collapse;">
-            <thead style="background-color: #f8f9fc; border-bottom: 2px solid #e3e6f0;">
-                <tr>
-                    <th
-                        style="padding: 18px 15px; text-align: left; color: #4e73df; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">
-                        Info Alat</th>
-                    <th
-                        style="padding: 18px 15px; text-align: left; color: #4e73df; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">
-                        Kategori</th>
-                    <th
-                        style="padding: 18px 15px; text-align: center; color: #4e73df; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">
-                        Stok Ready</th>
-                    <th
-                        style="padding: 18px 15px; text-align: center; color: #4e73df; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">
-                        Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($alats as $alat)
-                <tr style="border-bottom: 1px solid #f1f3f9; transition: 0.2s;"
-                    onmouseover="this.style.backgroundColor='#fcfdff'"
-                    onmouseout="this.style.backgroundColor='transparent'">
-                    <td style="padding: 18px 15px;">
-                        <span
-                            style="font-weight: 700; color: #3a3b45; font-size: 15px; display: block;">{{ $alat->nama_alat }}</span>
-                        <small style="color: #858796; font-size: 12px;">{{ Str::limit($alat->spesifikasi, 60) }}</small>
-                    </td>
-                    <td style="padding: 18px 15px;">
-                        <span
-                            style="background: #f0f2f9; color: #4e73df; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600;">
-                            {{ $alat->kategori->nama_kategori }}
-                        </span>
-                    </td>
-                    <td style="padding: 18px 15px; text-align: center;">
-                        <span
-                            style="font-size: 16px; font-weight: 700; color: {{ $alat->stok > 0 ? '#1cc88a' : '#e74a3b' }};">
-                            {{ $alat->stok }}
-                        </span>
-                    </td>
-                    <td style="padding: 18px 15px; text-align: center;">
-                        <form action="{{ route('peminjam.cart.add') }}" method="POST"
-                            style="display: flex; align-items: center; justify-content: center; gap: 8px;">
-                            @csrf
-                            <input type="hidden" name="alat_id" value="{{ $alat->id }}">
-                            <input type="number" name="jumlah" value="1" min="1" max="{{ $alat->stok }}"
-                                style="width: 65px; padding: 6px; border-radius: 6px; border: 1px solid #d1d3e2; font-size: 13px; text-align: center; outline: none;">
-                            <button type="submit"
-                                style="background-color: #4e73df; color: white; padding: 8px 14px; border-radius: 8px; border: none; font-size: 12px; font-weight: 700; cursor: pointer; transition: 0.3s;"
-                                onmouseover="this.style.backgroundColor='#2e59d9'"
-                                onmouseout="this.style.backgroundColor='#4e73df'">
-                                <i class="fas fa-plus-circle"></i> Pinjam
-                            </button>
-                        </form>
-                    </td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="4" style="padding: 50px; text-align: center; color: #999;">
-                        <i class="fas fa-box-open fa-3x mb-3" style="color: #ddd;"></i><br>
-                        Maaf, alat tidak ditemukan atau sedang tidak tersedia.
-                    </td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
+    {{-- TABLE --}}
+    <div class="glass-card table-card">
+
+        <div class="table-responsive">
+            <table class="table-soft">
+
+                <thead>
+                    <tr>
+                        <th>Alat</th>
+                        <th>Kategori</th>
+                        <th class="text-center">Stok</th>
+                        <th class="text-center">Aksi</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @forelse($alats as $alat)
+                    <tr>
+
+                        <td>
+                            <div class="alat-name">{{ $alat->nama_alat }}</div>
+                            <div class="alat-desc">
+                                {{ \Illuminate\Support\Str::limit($alat->spesifikasi, 60) }}
+                            </div>
+                        </td>
+
+                        <td>
+                            <span class="badge-soft">
+                                {{ $alat->kategori->nama_kategori }}
+                            </span>
+                        </td>
+
+                        <td class="text-center">
+                            <span class="stok {{ $alat->stok > 0 ? 'ok' : 'no' }}">
+                                {{ $alat->stok }}
+                            </span>
+                        </td>
+
+                        <td class="text-center">
+                            <form action="{{ route('peminjam.cart.add') }}" method="POST" class="form-soft">
+                                @csrf
+
+                                <input type="hidden" name="alat_id" value="{{ $alat->id }}">
+
+                                <input type="number" name="jumlah" value="1" min="1" max="{{ $alat->stok }}">
+
+                                <button type="submit">Pinjam</button>
+                            </form>
+                        </td>
+
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="4" class="empty-soft">
+                            Tidak ada alat yang tersedia.
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+
+            </table>
+        </div>
+
     </div>
 
-    <div style="margin-top: 25px; display: flex; justify-content: center;">
-        {{ $alats->appends(request()->input())->links() }}
-    </div>
 </div>
+
+<style>
+
+/* BASE */
+.katalog-wrapper{
+    font-family:'Inter',sans-serif;
+}
+
+/* HEADER */
+.header-box{
+    margin-bottom:15px;
+}
+
+.title{
+    font-weight:800;
+    color:#e2e8f0;
+    margin:0;
+}
+
+.subtitle{
+    color:#94a3b8;
+    font-size:13px;
+    margin:0;
+}
+
+/* GLASS CARD (SAMA DENGAN DASHBOARD KAMU) */
+.glass-card{
+    background:rgba(255,255,255,0.04);
+    border:1px solid rgba(255,255,255,0.08);
+    border-radius:16px;
+    padding:18px;
+    backdrop-filter:blur(10px);
+    margin-bottom:15px;
+}
+
+/* SEARCH CARD */
+.search-card{
+    display:flex;
+    align-items:center;
+}
+
+/* SEARCH BOX */
+.search-box{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    width:100%;
+}
+
+.search-box i{
+    color:#94a3b8;
+}
+
+.search-box input{
+    flex:1;
+    background:transparent;
+    border:none;
+    outline:none;
+    color:#e2e8f0;
+    font-size:13px;
+}
+
+.search-box button{
+    background:rgba(255,255,255,0.08);
+    border:none;
+    color:#e2e8f0;
+    padding:6px 12px;
+    border-radius:8px;
+    font-size:12px;
+}
+
+/* TABLE */
+.table-soft{
+    width:100%;
+    border-collapse:collapse;
+}
+
+.table-soft th{
+    font-size:11px;
+    color:#94a3b8;
+    text-transform:uppercase;
+    padding:12px;
+}
+
+.table-soft td{
+    padding:12px;
+    border-top:1px solid rgba(255,255,255,0.05);
+    color:#cbd5e1;
+}
+
+/* TEXT */
+.alat-name{
+    color:#e2e8f0;
+    font-weight:600;
+}
+
+.alat-desc{
+    color:#94a3b8;
+    font-size:12px;
+}
+
+/* BADGE */
+.badge-soft{
+    background:rgba(255,255,255,0.06);
+    color:#cbd5e1;
+    padding:4px 8px;
+    border-radius:8px;
+    font-size:11px;
+}
+
+/* STOK */
+.stok{
+    font-weight:600;
+}
+
+.stok.ok{
+    color:#34d399;
+}
+
+.stok.no{
+    color:#94a3b8;
+}
+
+/* FORM */
+.form-soft{
+    display:flex;
+    justify-content:center;
+    gap:6px;
+}
+
+.form-soft input{
+    width:55px;
+    background:rgba(255,255,255,0.05);
+    border:1px solid rgba(255,255,255,0.08);
+    color:#e2e8f0;
+    text-align:center;
+    border-radius:8px;
+}
+
+.form-soft button{
+    background:rgba(255,255,255,0.08);
+    color:#e2e8f0;
+    border:none;
+    padding:5px 8px;
+    border-radius:8px;
+    font-size:12px;
+}
+
+/* ALERT */
+.alert-soft{
+    padding:10px;
+    border-radius:10px;
+    font-size:13px;
+    color:#cbd5e1;
+    background:rgba(255,255,255,0.04);
+    border:1px solid rgba(255,255,255,0.08);
+    margin-bottom:12px;
+}
+
+.alert-soft.error{
+    color:#fca5a5;
+}
+
+/* EMPTY */
+.empty-soft{
+    text-align:center;
+    padding:30px;
+    color:#94a3b8;
+}
+
+/* CART */
+.btn-cart{
+    display:inline-block;
+    margin-top:10px;
+    background:rgba(255,255,255,0.06);
+    color:#cbd5e1;
+    padding:8px 10px;
+    border-radius:10px;
+    font-size:12px;
+    text-decoration:none;
+}
+
+</style>
+
 @endsection

@@ -1,137 +1,199 @@
 @extends('layouts.petugas')
 
 @section('content')
-<div class="container-fluid px-4" style="margin-top: 30px; font-family: 'Inter', 'Segoe UI', sans-serif;">
+<div style="font-family: 'Inter', sans-serif;">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h4 style="font-weight: 800; color: #1e293b; margin: 0; letter-spacing: -0.5px;">
-                <i class="fas fa-boxes text-primary me-2"></i> Inventaris Alat
-            </h4>
-            <p style="color: #64748b; font-size: 0.9rem; margin-top: 5px;">Manajemen ketersediaan stok barang gudang
-                secara real-time.</p>
-        </div>
-        <div class="d-none d-md-block">
-            <div
-                style="background: white; padding: 10px 20px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;">
-                <span style="font-size: 0.8rem; font-weight: 700; color: #475569;">
-                    <i class="fas fa-user-tag text-primary me-2"></i> Sesi: Petugas Gudang
-                </span>
-            </div>
-        </div>
+    <!-- HEADER -->
+    <div style="margin-bottom: 25px;">
+        <h4 style="font-weight: 800; color: #e5e7eb; margin: 0;">
+            <i class="fas fa-boxes" style="color:#60a5fa;"></i> Inventaris Alat
+        </h4>
+        <p style="color: #94a3b8; font-size: 0.9rem; margin-top: 5px;">
+            Manajemen stok barang gudang secara real-time
+        </p>
     </div>
 
-    <div
-        style="background: white; border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.04); overflow: hidden; border: 1px solid #e2e8f0;">
+    <!-- CARD TABLE -->
+    <div class="table-dark">
+
+        <div class="table-header">
+            <span>Data Inventaris</span>
+            <span class="badge-dark">{{ count($alats) }} Item</span>
+        </div>
+
         <div class="table-responsive">
-            <table class="table mb-0"
-                style="width: 100%; border-collapse: separate; border-spacing: 0; vertical-align: middle;">
+            <table>
                 <thead>
-                    <tr style="background-color: #f8fafc;">
-                        <th
-                            style="padding: 20px; text-align: left; color: #475569; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid #edf2f7; width: 40%;">
-                            Informasi Alat</th>
-                        <th
-                            style="padding: 20px; text-align: left; color: #475569; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid #edf2f7; width: 20%;">
-                            Kategori</th>
-                        <th
-                            style="padding: 20px; text-align: center; color: #475569; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid #edf2f7; width: 20%;">
-                            Jumlah Stok</th>
-                        <th
-                            style="padding: 20px; text-align: center; color: #475569; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid #edf2f7; width: 20%;">
-                            Status</th>
+                    <tr>
+                        <th>Informasi Alat</th>
+                        <th>Kategori</th>
+                        <th style="text-align:center;">Stok</th>
+                        <th style="text-align:center;">Status</th>
                     </tr>
                 </thead>
+
                 <tbody>
                     @forelse($alats as $a)
-                    <tr style="transition: all 0.2s ease;" onmouseover="this.style.backgroundColor='#fcfdfe'"
-                        onmouseout="this.style.backgroundColor='transparent'">
-                        <td style="padding: 20px; border-bottom: 1px solid #f1f5f9;">
-                            <div style="font-weight: 700; color: #1e293b; font-size: 15px; margin-bottom: 4px;">
-                                {{ $a->nama_alat }}</div>
-                            <div style="color: #64748b; font-size: 12px; line-height: 1.5; font-weight: 500;">
-                                <i class="fas fa-info-circle me-1" style="opacity: 0.5;"></i>
+                    <tr>
+
+                        <!-- INFO -->
+                        <td>
+                            <div class="nama">{{ $a->nama_alat }}</div>
+                            <div class="desc">
                                 {{ Str::limit($a->spesifikasi, 80) }}
                             </div>
                         </td>
-                        <td style="padding: 20px; border-bottom: 1px solid #f1f5f9;">
-                            <span
-                                style="background: #f1f5f9; color: #475569; padding: 6px 14px; border-radius: 8px; font-size: 12px; font-weight: 600; display: inline-block;">
+
+                        <!-- KATEGORI -->
+                        <td>
+                            <span class="badge">
                                 {{ $a->kategori->nama_kategori ?? 'Umum' }}
                             </span>
                         </td>
-                        <td style="padding: 20px; text-align: center; border-bottom: 1px solid #f1f5f9;">
-                            <div style="font-size: 20px; font-weight: 800; color: #1e293b;">{{ $a->stok }}</div>
-                            <small
-                                style="color: #94a3b8; font-size: 10px; font-weight: 700; text-transform: uppercase;">Unit</small>
+
+                        <!-- STOK -->
+                        <td class="center">
+                            <div class="stok">{{ $a->stok }}</div>
+                            <small>Unit</small>
                         </td>
-                        <td style="padding: 20px; text-align: center; border-bottom: 1px solid #f1f5f9;">
+
+                        <!-- STATUS -->
+                        <td class="center">
                             @if($a->stok > 10)
-                            <span
-                                style="background: #dcfce7; color: #166534; padding: 6px 14px; border-radius: 10px; font-size: 10px; font-weight: 800; display: inline-flex; align-items: center;">
-                                <span
-                                    style="width: 6px; height: 6px; background: #22c55e; border-radius: 50%; margin-right: 8px;"></span>
-                                AMAN
-                            </span>
+                            <span class="status aman">AMAN</span>
                             @elseif($a->stok > 0)
-                            <span
-                                style="background: #fef3c7; color: #92400e; padding: 6px 14px; border-radius: 10px; font-size: 10px; font-weight: 800; display: inline-flex; align-items: center;">
-                                <span
-                                    style="width: 6px; height: 6px; background: #f59e0b; border-radius: 50%; margin-right: 8px;"></span>
-                                TERBATAS
-                            </span>
+                            <span class="status terbatas">TERBATAS</span>
                             @else
-                            <span
-                                style="background: #fee2e2; color: #991b1b; padding: 6px 14px; border-radius: 10px; font-size: 10px; font-weight: 800; display: inline-flex; align-items: center;">
-                                <span
-                                    style="width: 6px; height: 6px; background: #ef4444; border-radius: 50%; margin-right: 8px;"></span>
-                                KOSONG
-                            </span>
+                            <span class="status kosong">KOSONG</span>
                             @endif
                         </td>
+
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="4" style="padding: 80px; text-align: center;">
-                            <div style="margin-bottom: 20px;">
-                                <img src="https://illustrations.popsy.co/amber/box-opening.svg" alt="Empty"
-                                    style="width: 140px; opacity: 0.6;">
-                            </div>
-                            <h6 style="color: #1e293b; font-weight: 800; margin-bottom: 5px;">Data Inventaris Kosong
-                            </h6>
-                            <p style="color: #94a3b8; font-size: 14px; font-weight: 500;">Belum ada data barang yang
-                                terdaftar di sistem.</p>
+                        <td colspan="4" style="text-align:center; padding:60px;">
+                            <i class="fas fa-box-open" style="font-size:40px; color:#64748b;"></i>
+                            <p style="color:#94a3b8;">Data inventaris kosong</p>
                         </td>
                     </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
+
     </div>
 
-    <div class="mt-4 d-flex justify-content-between align-items-center">
-        <p style="color: #94a3b8; font-size: 13px; font-weight: 500;">
-            Menampilkan <span style="color: #475569; font-weight: 700;">{{ count($alats) }}</span> alat tersedia
-        </p>
-        <div class="pagination-custom">
-            {{-- {{ $alats->links() }} --}}
-        </div>
+    <!-- FOOTER -->
+    <div style="margin-top:15px; color:#64748b; font-size:13px;">
+        Menampilkan <b style="color:#e5e7eb;">{{ count($alats) }}</b> alat tersedia
     </div>
+
 </div>
 
+<!-- STYLE -->
 <style>
-/* Custom Table Responsive Scrollbar */
+.table-dark {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* HEADER */
+.table-header {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    color: #e5e7eb;
+    font-weight: 700;
+}
+
+.badge-dark {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 5px 10px;
+    border-radius: 8px;
+    font-size: 12px;
+}
+
+/* TABLE */
+table {
+    width: 100%;
+}
+
+th {
+    text-align: left;
+    padding: 15px 20px;
+    font-size: 11px;
+    text-transform: uppercase;
+    color: #64748b;
+}
+
+td {
+    padding: 15px 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+tr:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+/* TEXT */
+.nama {
+    font-weight: 700;
+    color: #e5e7eb;
+}
+
+.desc {
+    font-size: 12px;
+    color: #94a3b8;
+}
+
+/* BADGE */
+.badge {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 5px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+}
+
+/* STOK */
+.center {
+    text-align: center;
+}
+
+.stok {
+    font-size: 20px;
+    font-weight: 800;
+}
+
+/* STATUS */
+.status {
+    padding: 5px 12px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.aman {
+    background: #064e3b;
+}
+
+.terbatas {
+    background: #78350f;
+}
+
+.kosong {
+    background: #7f1d1d;
+}
+
+/* SCROLL */
 .table-responsive::-webkit-scrollbar {
     height: 6px;
 }
 
-.table-responsive::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 10px;
-}
-
 .table-responsive::-webkit-scrollbar-thumb {
-    background: #e2e8f0;
+    background: rgba(255, 255, 255, 0.2);
     border-radius: 10px;
 }
 </style>

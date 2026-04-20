@@ -1,177 +1,260 @@
 @extends('layouts.petugas')
 
 @section('content')
-<div class="container-fluid px-4" style="margin-top: 30px; font-family: 'Inter', 'Segoe UI', sans-serif;">
+<div style="font-family: 'Inter', sans-serif;">
 
-    <div class="d-flex align-items-center justify-content-between mb-4">
-        <div>
-            <h4 style="font-weight: 800; color: #1e293b; margin: 0; letter-spacing: -0.5px;">👋 Selamat Datang, Petugas!
-            </h4>
-            <p style="color: #64748b; font-size: 0.95rem; margin-top: 5px;">Ringkasan operasional gudang alat hari ini —
-                <span style="font-weight: 600; color: #4e73df;">{{ now()->format('d M Y') }}</span>
-            </p>
-        </div>
-        <div class="d-none d-md-block">
-            <div
-                style="background: white; padding: 10px 20px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid #e2e8f0;">
-                <span style="font-size: 0.85rem; font-weight: 600; color: #4e73df;"><i
-                        class="fas fa-sync-alt fa-spin me-2"></i> Sistem Aktif</span>
-            </div>
-        </div>
+    <!-- HEADER -->
+    <div style="margin-bottom: 25px;">
+        <h4 style="font-weight: 800; color: #e5e7eb; margin: 0;">
+            👋 Selamat Datang, Petugas!
+        </h4>
+        <p style="color: #94a3b8; font-size: 0.9rem; margin-top: 5px;">
+            Ringkasan operasional hari ini —
+            <span style="font-weight: 600; color: #60a5fa;">
+                {{ now()->format('d M Y') }}
+            </span>
+        </p>
     </div>
 
-    <div class="row">
-        <div class="row">
-            <div class="col-md-6 mb-4">
-                <div
-                    style="background: white; border-radius: 15px; padding: 25px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; position: relative; overflow: hidden; height: 100%;">
-                    <div
-                        style="position: absolute; top: -10px; right: -10px; opacity: 0.05; font-size: 80px; color: #4e73df;">
-                        <i class="fas fa-clipboard-check"></i>
-                    </div>
-                    <div
-                        style="font-size: 0.75rem; font-weight: 800; color: #4e73df; text-transform: uppercase; letter-spacing: 1px;">
-                        Antrean Approval
-                    </div>
-                    <div style="font-size: 2.5rem; font-weight: 800; color: #1e293b; margin: 10px 0;">
-                        {{ $perlu_approval }}</div>
-                    <a href="{{ route('petugas.peminjaman.index') }}" class="btn btn-sm"
-                        style="background: #eef2ff; color: #4e73df; font-weight: 700; border-radius: 8px; font-size: 0.75rem; padding: 8px 20px;">
-                        Lihat Antrean <i class="fas fa-arrow-right ms-1"></i>
-                    </a>
-                </div>
-            </div>
+    <!-- CARD GRID -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit,minmax(250px,1fr)); gap: 20px;">
 
-            <div class="col-md-6 mb-4">
-                <div
-                    style="background: white; border-radius: 15px; padding: 25px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; position: relative; overflow: hidden; height: 100%;">
-                    <div
-                        style="position: absolute; top: -10px; right: -10px; opacity: 0.05; font-size: 80px; color: #1cc88a;">
-                        <i class="fas fa-hand-holding"></i>
-                    </div>
-                    <div
-                        style="font-size: 0.75rem; font-weight: 800; color: #1cc88a; text-transform: uppercase; letter-spacing: 1px;">
-                        Sedang Dipinjam
-                    </div>
-                    <div style="font-size: 2.5rem; font-weight: 800; color: #1e293b; margin: 10px 0;">
-                        {{ $sedang_dipinjam }}</div>
-                    <a href="{{ route('petugas.pengembalian.index') }}" class="btn btn-sm"
-                        style="background: #ecfdf5; color: #1cc88a; font-weight: 700; border-radius: 8px; font-size: 0.75rem; padding: 8px 20px;">
-                        Validasi Kembali <i class="fas fa-arrow-right ms-1"></i>
-                    </a>
-                </div>
-            </div>
-
-            <div class="col-md-6 mb-4">
-                <div
-                    style="background: white; border-radius: 15px; padding: 25px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; position: relative; overflow: hidden; height: 100%;">
-                    <div
-                        style="position: absolute; top: -10px; right: -10px; opacity: 0.05; font-size: 80px; color: #f6c23e;">
-                        <i class="fas fa-clock"></i>
-                    </div>
-                    <div
-                        style="font-size: 0.75rem; font-weight: 800; color: #f6c23e; text-transform: uppercase; letter-spacing: 1px;">
-                        Jatuh Tempo
-                    </div>
-                    <div style="font-size: 2.5rem; font-weight: 800; color: #1e293b; margin: 10px 0;">
-                        {{ $kembali_hari_ini }}</div>
-                    <span style="font-size: 0.75rem; color: #94a3b8; font-weight: 600;">
-                        <i class="fas fa-exclamation-circle me-1"></i> Segera cek pengembalian
-                    </span>
-                </div>
-            </div>
-
-            <div class="col-md-6 mb-4">
-                <div
-                    style="background: white; border-radius: 15px; padding: 25px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; position: relative; overflow: hidden; height: 100%;">
-                    <div
-                        style="position: absolute; top: -10px; right: -10px; opacity: 0.05; font-size: 80px; color: #36b9cc;">
-                        <i class="fas fa-boxes"></i>
-                    </div>
-                    <div
-                        style="font-size: 0.75rem; font-weight: 800; color: #36b9cc; text-transform: uppercase; letter-spacing: 1px;">
-                        Inventaris Siap
-                    </div>
-                    <div style="font-size: 2.5rem; font-weight: 800; color: #1e293b; margin: 10px 0;">{{ $total_alat }}
-                    </div>
-                    <a href="{{ route('petugas.alat.index') }}" class="btn btn-sm"
-                        style="background: #e1f5fe; color: #36b9cc; font-weight: 700; border-radius: 8px; font-size: 0.75rem; padding: 8px 20px;">
-                        Cek Inventaris <i class="fas fa-arrow-right ms-1"></i>
-                    </a>
-                </div>
-            </div>
+        <!-- CARD -->
+        <div class="card-dark">
+            <i class="fas fa-clipboard-check bg-icon"></i>
+            <div class="label">Antrean Approval</div>
+            <div class="value">{{ $perlu_approval }}</div>
+            <a href="{{ route('petugas.peminjaman.index') }}" class="btn-dark">
+                Lihat Antrean <i class="fas fa-arrow-right"></i>
+            </a>
         </div>
+
+        <div class="card-dark green">
+            <i class="fas fa-hand-holding bg-icon"></i>
+            <div class="label">Sedang Dipinjam</div>
+            <div class="value">{{ $sedang_dipinjam }}</div>
+            <a href="{{ route('petugas.pengembalian.index') }}" class="btn-dark">
+                Validasi Kembali <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+
+        <div class="card-dark yellow">
+            <i class="fas fa-clock bg-icon"></i>
+            <div class="label">Jatuh Tempo</div>
+            <div class="value">{{ $kembali_hari_ini }}</div>
+            <span class="note">
+                <i class="fas fa-exclamation-circle"></i> Segera cek pengembalian
+            </span>
+        </div>
+
+        <div class="card-dark cyan">
+            <i class="fas fa-boxes bg-icon"></i>
+            <div class="label">Inventaris Siap</div>
+            <div class="value">{{ $total_alat }}</div>
+            <a href="{{ route('petugas.alat.index') }}" class="btn-dark">
+                Cek Inventaris <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+
     </div>
 
-    <div
-        style="background: white; border-radius: 20px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; overflow: hidden; margin-top: 10px;">
-        <div
-            style="padding: 20px 25px; border-bottom: 1px solid #f1f5f9; background: #ffffff; display: flex; align-items: center; justify-content: space-between;">
-            <h6 style="font-weight: 800; color: #1e293b; margin: 0; font-size: 1rem;"><i
-                    class="fas fa-bolt text-warning me-2"></i> Aktivitas Terbaru</h6>
-            <span class="badge"
-                style="background: #f1f5f9; color: #475569; padding: 8px 12px; border-radius: 8px; font-weight: 600;">{{ count($recent_activities) }}
-                Aktivitas</span>
+    <!-- AKTIVITAS -->
+    <div class="table-dark">
+
+        <div class="table-header">
+            <h6><i class="fas fa-bolt"></i> Aktivitas Terbaru</h6>
+            <span>{{ count($recent_activities) }} Aktivitas</span>
         </div>
 
-        <div class="table-responsive">
-            <table class="table mb-0" style="width: 100%; border-collapse: separate; border-spacing: 0;">
-                <tbody style="background: white;">
-                    @forelse($recent_activities as $ra)
-                    <tr style="transition: all 0.2s ease;" onmouseover="this.style.background='#f8fafc'"
-                        onmouseout="this.style.background='white'">
-                        <td style="padding: 20px 25px; vertical-align: middle;">
-                            <div class="d-flex align-items-center">
-                                <div
-                                    style="width: 45px; height: 45px; background: #f1f5f9; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-right: 15px; font-weight: 800; color: #4e73df; font-size: 1.2rem;">
-                                    {{ substr($ra->user->name, 0, 1) }}
-                                </div>
-                                <div>
-                                    <span
-                                        style="font-weight: 700; color: #1e293b; display: block; font-size: 0.95rem;">{{ $ra->user->name }}</span>
-                                    <span style="color: #64748b; font-size: 0.85rem;">Peminjaman: <span
-                                            style="font-weight: 700; color: #4e73df;">#{{ $ra->kode_peminjaman }}</span></span>
+        <table>
+            <tbody>
+                @forelse($recent_activities as $ra)
+                <tr>
+                    <td>
+                        <div class="user-info">
+                            <div class="avatar">
+                                {{ substr($ra->user->name, 0, 1) }}
+                            </div>
+                            <div>
+                                <div class="name">{{ $ra->user->name }}</div>
+                                <div class="kode">
+                                    Peminjaman:
+                                    <b>#{{ $ra->kode_peminjaman }}</b>
                                 </div>
                             </div>
-                            <div style="margin-top: 12px; display: flex; flex-wrap: wrap; gap: 8px;">
-                                @foreach($ra->detailPeminjaman as $detail)
-                                <span
-                                    style="background: #ffffff; color: #334155; padding: 4px 12px; border-radius: 6px; font-size: 0.7rem; font-weight: 700; border: 1px solid #e2e8f0; display: inline-flex; align-items: center;">
-                                    <i class="fas fa-cube me-1 text-primary" style="font-size: 0.6rem;"></i>
-                                    {{ $detail->alat->nama_alat }} ({{ $detail->jumlah }})
-                                </span>
-                                @endforeach
-                            </div>
-                        </td>
-                        <td style="padding: 20px 25px; text-align: right; vertical-align: middle;">
-                            @php
-                            $status_bg = $ra->status == 'menunggu' ? '#fef3c7' : ($ra->status == 'disetujui' ? '#d1fae5'
-                            : '#fee2e2');
-                            $status_color = $ra->status == 'menunggu' ? '#92400e' : ($ra->status == 'disetujui' ?
-                            '#065f46' : '#991b1b');
-                            @endphp
-                            <span
-                                style="background: {{ $status_bg }}; color: {{ $status_color }}; padding: 6px 16px; border-radius: 8px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">
-                                {{ $ra->status }}
+                        </div>
+
+                        <div class="items">
+                            @foreach($ra->detailPeminjaman as $detail)
+                            <span>
+                                <i class="fas fa-cube"></i>
+                                {{ $detail->alat->nama_alat }} ({{ $detail->jumlah }})
                             </span>
-                        </td>
-                        <td
-                            style="padding: 20px 25px; text-align: right; color: #94a3b8; font-size: 0.8rem; vertical-align: middle; white-space: nowrap;">
-                            <i class="far fa-clock me-1"></i> {{ $ra->created_at->diffForHumans() }}
-                        </td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="3" style="padding: 60px; text-align: center;">
-                            <div style="color: #cbd5e1; font-size: 4rem; margin-bottom: 15px;"><i
-                                    class="fas fa-folder-open"></i></div>
-                            <p style="color: #94a3b8; font-weight: 600;">Belum ada aktivitas peminjaman hari ini.</p>
-                        </td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
+                            @endforeach
+                        </div>
+                    </td>
+
+                    <td class="status">
+                        @php
+                        $status_bg = $ra->status == 'menunggu' ? '#78350f' : ($ra->status == 'disetujui' ? '#064e3b' :
+                        '#7f1d1d');
+                        @endphp
+                        <span style="background: {{ $status_bg }}">
+                            {{ $ra->status }}
+                        </span>
+                    </td>
+
+                    <td class="time">
+                        {{ $ra->created_at->diffForHumans() }}
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="3" style="text-align:center; padding:50px; color:#64748b;">
+                        <i class="fas fa-folder-open" style="font-size:40px;"></i>
+                        <p>Belum ada aktivitas hari ini</p>
+                    </td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
+
 </div>
+
+<!-- STYLE -->
+<style>
+.card-dark {
+    position: relative;
+    padding: 25px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.card-dark .label {
+    font-size: 12px;
+    color: #60a5fa;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.card-dark .value {
+    font-size: 32px;
+    font-weight: 800;
+    margin: 10px 0;
+}
+
+.card-dark .btn-dark {
+    display: inline-block;
+    font-size: 12px;
+    background: rgba(59, 130, 246, 0.2);
+    color: #60a5fa;
+    padding: 6px 15px;
+    border-radius: 8px;
+    font-weight: 700;
+}
+
+.card-dark .note {
+    font-size: 12px;
+    color: #fbbf24;
+}
+
+.bg-icon {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    font-size: 60px;
+    opacity: 0.05;
+}
+
+/* TABLE */
+.table-dark {
+    margin-top: 25px;
+    border-radius: 16px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.table-header {
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.table-header h6 {
+    margin: 0;
+    color: #e5e7eb;
+}
+
+.table-header span {
+    font-size: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 5px 10px;
+    border-radius: 8px;
+}
+
+table {
+    width: 100%;
+}
+
+tr {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+td {
+    padding: 15px 20px;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+}
+
+.name {
+    font-weight: 700;
+}
+
+.kode {
+    font-size: 12px;
+    color: #94a3b8;
+}
+
+.items span {
+    display: inline-block;
+    font-size: 11px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 4px 10px;
+    border-radius: 6px;
+    margin-top: 5px;
+    margin-right: 5px;
+}
+
+.status span {
+    padding: 5px 12px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.time {
+    font-size: 12px;
+    color: #64748b;
+}
+</style>
 @endsection

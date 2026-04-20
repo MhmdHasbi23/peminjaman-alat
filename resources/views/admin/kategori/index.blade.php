@@ -1,101 +1,307 @@
 @extends('layouts.admin')
 
 @section('content')
-<div class="container-fluid px-4" style="margin-top: 30px; font-family: 'Inter', 'Segoe UI', sans-serif;">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+<div class="container-fluid main-wrapper">
+
+    {{-- HEADER --}}
+    <div class="header-section">
         <div>
-            <h4 style="font-weight: 800; color: #1a202c; margin: 0; letter-spacing: -0.5px;">🏷️ Manajemen Kategori</h4>
-            <p style="color: #718096; font-size: 14px; margin-top: 5px;">Kelola pengelompokan alat untuk mempermudah
-                pencarian.</p>
+            <h4 class="title">
+                🏷️ Manajemen Kategori
+            </h4>
+            <p class="subtitle">
+                Kelola kategori alat agar lebih terstruktur
+            </p>
         </div>
-    </div>
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <a href="{{ route('admin.kategori.create') }}" class="btn shadow-sm"
-            style="background: linear-gradient(135deg, #4e73df 0%, #224abe 100%); color: white; border-radius: 10px; padding: 12px 24px; text-decoration: none; font-weight: 700; font-size: 13px; transition: all 0.3s ease; border: none;">
-            <i class="fas fa-plus me-2"></i> Kategori Baru
+
+        <a href="{{ route('admin.kategori.create') }}" class="btn-add">
+            <i class="fas fa-plus"></i> Tambah Kategori
         </a>
     </div>
 
-    @if(session('success'))
-    <div class="alert border-0 shadow-sm"
-        style="background-color: #def7ec; color: #03543f; border-radius: 12px; padding: 15px 20px; margin-bottom: 20px;"
-        role="alert">
-        <div class="d-flex align-items-center">
-            <i class="fas fa-check-circle me-2"></i>
-            <span style="font-weight: 600;">{{ session('success') }}</span>
+    {{-- TABLE --}}
+    <div class="card-modern">
+        <div class="table-responsive">
+
+            <table class="table-modern">
+                <thead>
+                    <tr>
+                        <th width="80">No</th>
+                        <th>Nama Kategori</th>
+                        <th class="text-center" width="160">Aksi</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @forelse($kategoris as $kategori)
+                    <tr>
+                        <td class="number">
+                            {{ $loop->iteration }}
+                        </td>
+
+                        <td>
+                            <div class="kategori-item">
+                                <div class="icon-box">
+                                    <i class="fas fa-tag"></i>
+                                </div>
+
+                                <div class="kategori-text">
+                                    {{ $kategori->nama_kategori }}
+                                </div>
+                            </div>
+                        </td>
+
+                        <td>
+                            <div class="action-group">
+
+                                <a href="{{ route('admin.kategori.edit', $kategori->id) }}"
+                                    class="btn-action edit">
+                                    <i class="fas fa-pen"></i>
+                                </a>
+
+                                <form action="{{ route('admin.kategori.destroy', $kategori->id) }}"
+                                    method="POST" class="form-hapus-kategori">
+                                    @csrf
+                                    @method('DELETE')
+
+                                    <button type="submit" class="btn-action delete">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+
+                            </div>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="3" class="empty">
+                            <i class="fas fa-tags"></i>
+                            <p>Belum ada kategori</p>
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+
+            </table>
+
         </div>
     </div>
-    @endif
 
-    <div
-        style="background: white; border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.04); overflow: hidden; border: 1px solid #e2e8f0;">
-        <table class="table mb-0"
-            style="width: 100%; border-collapse: separate; border-spacing: 0; vertical-align: middle;">
-            <thead>
-                <tr style="background-color: #f8fafc;">
-                    <th
-                        style="padding: 20px; text-align: left; color: #4a5568; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid #edf2f7; width: 80px;">
-                        NO</th>
-                    <th
-                        style="padding: 20px; text-align: left; color: #4a5568; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid #edf2f7;">
-                        NAMA KATEGORI</th>
-                    <th
-                        style="padding: 20px; text-align: center; color: #4a5568; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid #edf2f7; width: 220px;">
-                        AKSI</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($kategoris as $kategori)
-                <tr style="transition: all 0.2s ease;" onmouseover="this.style.backgroundColor='#fcfdfe'"
-                    onmouseout="this.style.backgroundColor='transparent'">
-                    <td
-                        style="padding: 20px; color: #94a3b8; font-weight: 600; font-size: 14px; border-bottom: 1px solid #f1f5f9;">
-                        {{ $loop->iteration }}
-                    </td>
-                    <td style="padding: 20px; border-bottom: 1px solid #f1f5f9;">
-                        <div style="font-weight: 700; color: #1e293b; font-size: 15px;">{{ $kategori->nama_kategori }}
-                        </div>
-                    </td>
-                    <td style="padding: 20px; border-bottom: 1px solid #f1f5f9;">
-                        <div style="display: flex; justify-content: center; align-items: center; gap: 10px;">
-
-                            <a href="{{ route('admin.kategori.edit', $kategori->id) }}" class="btn-edit"
-                                style="display: inline-flex; align-items: center; white-space: nowrap; background-color: white; color: #4e73df; border: 1px solid #e2e8f0; padding: 8px 16px; border-radius: 8px; text-decoration: none; font-size: 12px; font-weight: 700; transition: all 0.2s;">
-                                <i class="fas fa-edit" style="margin-right: 8px;"></i> Edit
-                            </a>
-
-                            <form action="{{ route('admin.kategori.destroy', $kategori->id) }}" method="POST"
-                                onsubmit="return confirm('Hapus kategori ini?')" style="margin: 0;">
-                                @csrf @method('DELETE')
-                                <button type="submit" class="btn-delete"
-                                    style="display: inline-flex; align-items: center; white-space: nowrap; background-color: white; color: #e74a3b; border: 1px solid #fee2e2; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 700; transition: all 0.2s;">
-                                    <i class="fas fa-trash-alt" style="margin-right: 8px;"></i> Hapus
-                                </button>
-                            </form>
-
-                        </div>
-                    </td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="3" style="padding: 40px; text-align: center; color: #94a3b8;">Belum ada data.</td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
 </div>
 
+{{-- STYLE --}}
 <style>
-.btn-edit:hover {
-    background-color: #f8fafc !important;
-    border-color: #4e73df !important;
+
+/* WRAPPER */
+.main-wrapper {
+    padding: 25px;
 }
 
-.btn-delete:hover {
-    background-color: #fff1f0 !important;
-    border-color: #e74a3b !important;
+/* HEADER */
+.header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
 }
+
+.title {
+    font-weight: 700;
+    color: #e2e8f0;
+}
+
+.subtitle {
+    font-size: 13px;
+    color: #94a3b8;
+}
+
+/* BUTTON */
+.btn-add {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    padding: 10px 18px;
+    border-radius: 10px;
+    color: white;
+    font-size: 13px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: 0.3s;
+}
+
+.btn-add:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(59,130,246,0.3);
+}
+
+/* CARD */
+.card-modern {
+    background: rgba(255,255,255,0.04);
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.05);
+    backdrop-filter: blur(12px);
+}
+
+/* TABLE */
+.table-modern {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table-modern th {
+    padding: 15px;
+    font-size: 11px;
+    color: #94a3b8;
+    text-transform: uppercase;
+}
+
+.table-modern td {
+    padding: 15px;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    color: #e2e8f0;
+}
+
+.table-modern tr:hover {
+    background: rgba(255,255,255,0.03);
+}
+
+/* NUMBER */
+.number {
+    color: #94a3b8;
+    font-weight: 600;
+}
+
+/* ITEM */
+.kategori-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.icon-box {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: rgba(59,130,246,0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #93c5fd;
+}
+
+/* TEXT */
+.kategori-text {
+    font-weight: 600;
+}
+
+/* ACTION */
+.action-group {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-action {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-action.edit {
+    background: rgba(59,130,246,0.15);
+    color: #93c5fd;
+}
+
+.btn-action.delete {
+    background: rgba(248,113,113,0.15);
+    color: #f87171;
+}
+
+.btn-action:hover {
+    transform: scale(1.1);
+}
+
+/* EMPTY */
+.empty {
+    text-align: center;
+    padding: 50px;
+    color: #94a3b8;
+}
+
+.empty i {
+    font-size: 28px;
+    margin-bottom: 10px;
+}
+
+/* ALERT */
+.swal2-popup {
+    border-radius: 12px !important;
+}
+
 </style>
+
+@endsection
+
+
+@section('scripts')
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+
+// SUCCESS
+@if(session('success'))
+Swal.fire({
+    icon: 'success',
+    title: 'Berhasil',
+    text: '{{ session('success') }}',
+    background: '#0f172a',
+    color: '#fff',
+    confirmButtonColor: '#3b82f6'
+});
+@endif
+
+// ERROR
+@if(session('error'))
+Swal.fire({
+    icon: 'error',
+    title: 'Gagal',
+    text: '{{ session('error') }}',
+    background: '#0f172a',
+    color: '#fff',
+    confirmButtonColor: '#ef4444'
+});
+@endif
+
+// DELETE CONFIRM
+document.querySelectorAll('.form-hapus-kategori').forEach(form => {
+    form.addEventListener('submit', function(e){
+        e.preventDefault();
+
+        Swal.fire({
+            title: 'Hapus kategori?',
+            text: 'Data tidak bisa dikembalikan',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: 'Hapus',
+            background: '#0f172a',
+            color: '#fff'
+        }).then((result)=>{
+            if(result.isConfirmed){
+                this.submit();
+            }
+        });
+    });
+});
+
+</script>
+
 @endsection

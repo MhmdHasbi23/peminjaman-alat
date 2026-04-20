@@ -61,10 +61,13 @@ Route::middleware(['auth', 'role:admin'])
         Route::post('/peminjaman/tolak/{id}', [TransaksiController::class, 'tolak'])->name('peminjaman.tolak');
 
         // 4. DETAIL & HAPUS
+        Route::delete('/peminjaman/{id}', [TransaksiController::class, 'destroy'])->name('admin.peminjaman.destroy');
         Route::get('/peminjaman/detail/{id}', [TransaksiController::class, 'show'])->name('peminjaman.show');
         Route::delete('/peminjaman/hapus/{id}', [TransaksiController::class, 'destroy'])->name('peminjaman.destroy');
+        // Pastikan seperti ini di web.php
 
         // 5. LOG AKTIVITAS
+        Route::get('/search', [App\Http\Controllers\Admin\SearchController::class, 'index'])->name('search');
         Route::get('/log-aktivitas', [ActivityLogController::class, 'index'])->name('log.index');
 });
 

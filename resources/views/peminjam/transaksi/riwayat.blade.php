@@ -1,126 +1,196 @@
 @extends('layouts.peminjam')
 
 @section('content')
-<div class="container-fluid px-4" style="margin-top: 30px; font-family: 'Inter', 'Segoe UI', sans-serif;">
+<div style="
+    width: 100%;
+    min-height: calc(100vh - 70px);
+    padding: 25px;
+    font-family: 'Inter', sans-serif;
+">
 
-    <div class="mb-4">
-        <h4 style="font-weight: 800; color: #1e293b; margin: 0; letter-spacing: -0.5px;">📜 Riwayat Peminjaman Saya</h4>
-        <p style="color: #64748b; font-size: 0.95rem; margin-top: 5px;">Pantau status pengajuan, riwayat denda, dan
-            jadwal pengembalian alat Anda secara transparan.</p>
+    {{-- ================= HEADER ================= --}}
+    <div style="margin-bottom: 20px;">
+        <h4 style="font-weight: 800; color: #e2e8f0; margin: 0;">
+            📜 Riwayat Peminjaman Saya
+        </h4>
+        <p style="color:#94a3b8; font-size:0.9rem; margin-top:6px;">
+            Pantau status, jadwal, dan denda peminjaman Anda.
+        </p>
     </div>
 
-    <div
-        style="background: white; border-radius: 20px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.04); border: 1px solid #e2e8f0; overflow: hidden;">
+    {{-- ================= TABLE CARD ================= --}}
+    <div style="
+        background: rgba(255,255,255,0.03);
+        border:1px solid rgba(255,255,255,0.06);
+        border-radius:18px;
+        overflow:hidden;
+    ">
+
         <div class="table-responsive">
-            <table class="table mb-0"
-                style="width: 100%; border-collapse: separate; border-spacing: 0; vertical-align: middle;">
+
+            <table style="width:100%; border-collapse:collapse; color:#cbd5e1;">
+
+                {{-- ================= HEADER TABLE ================= --}}
                 <thead>
-                    <tr style="background-color: #f8fafc;">
-                        <th
-                            style="padding: 20px; text-align: left; color: #475569; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid #edf2f7;">
-                            Kode & Periode</th>
-                        <th
-                            style="padding: 20px; text-align: left; color: #475569; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid #edf2f7;">
-                            Alat yang Dipinjam</th>
-                        <th
-                            style="padding: 20px; text-align: center; color: #475569; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid #edf2f7;">
-                            Status</th>
-                        <th
-                            style="padding: 20px; text-align: right; color: #475569; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid #edf2f7;">
-                            Biaya Denda</th>
+                    <tr style="
+                        background: rgba(255,255,255,0.02);
+                        color:#94a3b8;
+                        font-size:11px;
+                        text-transform:uppercase;
+                        letter-spacing:1px;
+                    ">
+                        <th style="padding:16px; text-align:left;">Kode & Periode</th>
+                        <th style="padding:16px; text-align:left;">Alat</th>
+                        <th style="padding:16px; text-align:center;">Status</th>
+                        <th style="padding:16px; text-align:right;">Denda</th>
                     </tr>
                 </thead>
+
+                {{-- ================= BODY ================= --}}
                 <tbody>
+
                     @forelse($riwayat as $r)
-                    <tr style="transition: all 0.2s ease;" onmouseover="this.style.backgroundColor='#fcfdfe'"
-                        onmouseout="this.style.backgroundColor='transparent'">
-                        <td style="padding: 20px; border-bottom: 1px solid #f1f5f9;">
-                            <span
-                                style="display: block; font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 800; color: #4e73df; margin-bottom: 6px;">#{{ $r->kode_peminjaman }}</span>
-                            <div style="font-size: 12px; color: #64748b;">
-                                <i class="far fa-calendar-alt me-1"></i> Pinjam: <span
-                                    style="font-weight: 600; color: #1e293b;">{{ \Carbon\Carbon::parse($r->tgl_pinjam)->format('d M Y') }}</span>
+
+                    <tr style="
+                        border-top:1px solid rgba(255,255,255,0.05);
+                        transition:0.2s;
+                    "
+                    onmouseover="this.style.backgroundColor='rgba(255,255,255,0.02)'"
+                    onmouseout="this.style.backgroundColor='transparent'">
+
+                        {{-- KODE --}}
+                        <td style="padding:16px;">
+
+                            <div style="color:#93c5fd; font-weight:800;">
+                                #{{ $r->kode_peminjaman }}
                             </div>
-                            <div style="font-size: 12px; color: #e11d48; margin-top: 2px;">
-                                <i class="far fa-clock me-1"></i> Kembali: <span
-                                    style="font-weight: 600;">{{ \Carbon\Carbon::parse($r->tgl_kembali_rencana)->format('d M Y') }}</span>
+
+                            <div style="font-size:11px; color:#94a3b8; margin-top:5px;">
+                                📅 {{ \Carbon\Carbon::parse($r->tgl_pinjam)->format('d M Y') }}
+                                <br>
+                                ↩ {{ \Carbon\Carbon::parse($r->tgl_kembali_rencana)->format('d M Y') }}
                             </div>
+
                         </td>
-                        <td style="padding: 20px; border-bottom: 1px solid #f1f5f9;">
+
+                        {{-- ALAT --}}
+                        <td style="padding:16px;">
+
                             @foreach($r->detailPeminjaman as $detail)
-                            <div
-                                style="font-size: 13px; color: #475569; margin-bottom: 4px; display: flex; align-items: center;">
-                                <div
-                                    style="width: 4px; height: 4px; background: #cbd5e1; border-radius: 50%; margin-right: 10px;">
-                                </div>
-                                {{ $detail->alat->nama_alat }}
-                                <span
-                                    style="font-weight: 800; color: #4e73df; font-size: 11px; margin-left: 8px;">({{ $detail->jumlah }}x)</span>
+                            <div style="
+                                display:flex;
+                                justify-content:space-between;
+                                font-size:13px;
+                                margin-bottom:4px;
+                            ">
+                                <span>
+                                    <i class="fas fa-circle"
+                                       style="font-size:6px; color:#60a5fa; margin-right:8px;"></i>
+                                    {{ $detail->alat->nama_alat }}
+                                </span>
+
+                                <span style="
+                                    background: rgba(96,165,250,0.12);
+                                    color:#93c5fd;
+                                    padding:2px 8px;
+                                    border-radius:8px;
+                                    font-size:11px;
+                                    font-weight:600;">
+                                    {{ $detail->jumlah }}x
+                                </span>
                             </div>
                             @endforeach
+
                         </td>
-                        <td style="padding: 20px; text-align: center; border-bottom: 1px solid #f1f5f9;">
+
+                        {{-- STATUS --}}
+                        <td style="padding:16px; text-align:center;">
+
                             @php
                             $statusStyle = match($r->status) {
-                            'menunggu' => ['bg' => '#fef3c7', 'text' => '#92400e', 'icon' => 'fa-hourglass-half'],
-                            'disetujui' => ['bg' => '#dcfce7', 'text' => '#166534', 'icon' => 'fa-check-circle'],
-                            'selesai' => ['bg' => '#e0e7ff', 'text' => '#3730a3', 'icon' => 'fa-history'],
-                            'ditolak' => ['bg' => '#fee2e2', 'text' => '#991b1b', 'icon' => 'fa-times-circle'],
-                            default => ['bg' => '#f1f5f9', 'text' => '#475569', 'icon' => 'fa-info-circle']
+                                'menunggu' => ['bg'=>'rgba(245,158,11,0.15)','text'=>'#fbbf24','icon'=>'fa-hourglass-half'],
+                                'disetujui' => ['bg'=>'rgba(16,185,129,0.15)','text'=>'#34d399','icon'=>'fa-check-circle'],
+                                'selesai' => ['bg'=>'rgba(99,102,241,0.15)','text'=>'#818cf8','icon'=>'fa-history'],
+                                'ditolak' => ['bg'=>'rgba(239,68,68,0.15)','text'=>'#f87171','icon'=>'fa-times-circle'],
+                                default => ['bg'=>'rgba(148,163,184,0.15)','text'=>'#cbd5e1','icon'=>'fa-info-circle']
                             };
                             @endphp
-                            <span
-                                style="background: {{ $statusStyle['bg'] }}; color: {{ $statusStyle['text'] }}; padding: 6px 14px; border-radius: 10px; font-size: 10px; font-weight: 800; text-transform: uppercase; display: inline-flex; align-items: center; letter-spacing: 0.5px;">
-                                <i class="fas {{ $statusStyle['icon'] }} me-2"></i> {{ $r->status }}
+
+                            <span style="
+                                background: {{ $statusStyle['bg'] }};
+                                color: {{ $statusStyle['text'] }};
+                                padding:6px 10px;
+                                border-radius:10px;
+                                font-size:10px;
+                                font-weight:800;
+                                text-transform:uppercase;
+                                display:inline-flex;
+                                align-items:center;
+                                gap:6px;">
+                                <i class="fas {{ $statusStyle['icon'] }}"></i>
+                                {{ $r->status }}
                             </span>
+
                         </td>
-                        <td style="padding: 20px; text-align: right; border-bottom: 1px solid #f1f5f9;">
-                            <div
-                                style="font-weight: 800; color: {{ $r->denda > 0 ? '#e11d48' : '#10b981' }}; font-size: 15px;">
+
+                        {{-- DENDA --}}
+                        <td style="padding:16px; text-align:right;">
+
+                            <div style="
+                                font-weight:800;
+                                color: {{ $r->denda > 0 ? '#f87171' : '#34d399' }};
+                                font-size:14px;">
                                 Rp {{ number_format($r->denda, 0, ',', '.') }}
                             </div>
-                            @if($r->denda > 0)
-                            <small style="color: #94a3b8; font-size: 10px; font-weight: 600;">Terhitung Denda</small>
-                            @else
-                            <small style="color: #94a3b8; font-size: 10px; font-weight: 600;">Bebas Denda</small>
-                            @endif
-                        </td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="4" style="padding: 80px; text-align: center;">
-                            <div
-                                style="background: #f8fafc; width: 100px; height: 100px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
-                                <i class="fas fa-history" style="font-size: 40px; color: #cbd5e1;"></i>
+
+                            <div style="font-size:11px; color:#94a3b8;">
+                                {{ $r->denda > 0 ? 'Terkena denda' : 'Bebas denda' }}
                             </div>
-                            <h6 style="color: #1e293b; font-weight: 800; margin-bottom: 8px;">Belum Ada Riwayat</h6>
-                            <p style="color: #94a3b8; font-size: 14px; font-weight: 500;">Anda belum pernah melakukan
-                                peminjaman alat sebelumnya.</p>
-                            <a href="{{ route('peminjam.alat.index') }}" class="btn btn-primary"
-                                style="border-radius: 10px; font-weight: 700; padding: 10px 25px; margin-top: 15px;">Pinjam
-                                Alat Sekarang</a>
+
+                        </td>
+
+                    </tr>
+
+                    @empty
+
+                    <tr>
+                        <td colspan="4" style="padding:60px; text-align:center; color:#94a3b8;">
+
+                            <i class="fas fa-history" style="font-size:40px; color:#334155;"></i>
+
+                            <h5 style="color:#e2e8f0; margin-top:10px;">
+                                Belum Ada Riwayat
+                            </h5>
+
+                            <p style="font-size:13px;">
+                                Anda belum melakukan peminjaman alat.
+                            </p>
+
+                            <a href="{{ route('peminjam.alat.index') }}"
+                                style="
+                                    display:inline-block;
+                                    margin-top:10px;
+                                    padding:10px 16px;
+                                    border-radius:12px;
+                                    background: linear-gradient(135deg,#3b82f6,#2563eb);
+                                    color:white;
+                                    text-decoration:none;
+                                    font-weight:700;">
+                                Pinjam Sekarang
+                            </a>
+
                         </td>
                     </tr>
+
                     @endforelse
+
                 </tbody>
+
             </table>
+
         </div>
+
     </div>
+
 </div>
-
-<style>
-/* Custom Scrollbar for responsiveness */
-.table-responsive::-webkit-scrollbar {
-    height: 6px;
-}
-
-.table-responsive::-webkit-scrollbar-track {
-    background: #f1f1f1;
-}
-
-.table-responsive::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 10px;
-}
-</style>
 @endsection

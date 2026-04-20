@@ -58,9 +58,18 @@
             @foreach($laporans as $l)
             <tr>
                 <td>{{ $loop->iteration }}</td>
-                <td>{{ $l->user->name }}</td>
-                <td>{{ $l->alat->nama_alat }} ({{ $l->jumlah }})</td>
-                <td>{{ \Carbon\Carbon::parse($l->tgl_kembali_real)->format('d/m/Y') }}</td>
+                <td>{{ $l->user->name ?? 'User Tidak Ditemukan' }}</td>
+                <td>
+                    {{-- Loop detail untuk mengambil alat --}}
+                    @if($l->detailPeminjaman->isEmpty())
+                    <span class="text-muted">Tidak ada alat</span>
+                    @else
+                    @foreach($l->detailPeminjaman as $detail)
+                    {{ $detail->alat->nama_alat ?? 'Alat Terhapus' }} ({{ $detail->jumlah }})<br>
+                    @endforeach
+                    @endif
+                </td>
+                <td>{{ $l->tgl_kembali_real ? \Carbon\Carbon::parse($l->tgl_kembali_real)->format('d/m/Y') : '-' }}</td>
                 <td>Rp {{ number_format($l->denda, 0, ',', '.') }}</td>
             </tr>
             @endforeach

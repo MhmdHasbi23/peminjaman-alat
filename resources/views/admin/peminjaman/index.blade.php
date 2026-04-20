@@ -1,204 +1,309 @@
 @extends('layouts.admin')
 
 @section('content')
-<div class="container-fluid px-4" style="margin-top: 30px; font-family: 'Inter', 'Segoe UI', sans-serif;">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+<div class="container-fluid main-wrapper">
+
+    {{-- HEADER --}}
+    <div class="header-section">
         <div>
-            <h4 style="font-weight: 800; color: #1a202c; margin: 0; letter-spacing: -0.5px;">
-                <i class="fas fa-chart-line me-2" style="color: #4e73df;"></i> Monitoring Transaksi
+            <h4 class="title">
+                <i class="fas fa-chart-line me-2"></i>
+                Monitoring Transaksi
             </h4>
-            <p style="color: #718096; font-size: 14px; margin: 5px 0 0 0;">Kelola dan pantau seluruh aktivitas sirkulasi
-                alat secara real-time.</p>
+            <p class="subtitle">
+                Pantau aktivitas peminjaman alat secara real-time
+            </p>
         </div>
-    </div>
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div class="d-none d-md-block">
-            <span class="badge"
-                style="background: #ebf4ff; color: #3182ce; padding: 10px 15px; border-radius: 8px; font-weight: 600; border: 1px solid #bee3f8;">
-                <i class="fas fa-clock me-1"></i> Update: {{ now()->format('H:i') }} WIB
+
+        <div class="header-right">
+            <span class="badge-time">
+                <i class="fas fa-clock me-1"></i> {{ now()->format('H:i') }} WIB
             </span>
         </div>
     </div>
 
-    @if(session('success'))
-    <div class="alert border-0 shadow-sm mb-4" style="background: #def7ec; color: #03543f; border-radius: 12px;"
-        role="alert">
-        <div class="d-flex align-items-center">
-            <i class="fas fa-check-circle me-2"></i>
-            <strong>Berhasil!</strong> {{ session('success') }}
-            <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    </div>
-    @endif
-
-    <div
-        style="background: white; border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.04); border: 1px solid #e2e8f0; overflow: hidden;">
+    {{-- TABLE --}}
+    <div class="card-modern">
         <div class="table-responsive">
-            <table class="table mb-0" style="width: 100%; vertical-align: middle; border-collapse: collapse;">
+
+            <table class="table-modern">
                 <thead>
-                    <tr style="background-color: #f8fafc;">
-                        <th
-                            style="width: 25%; padding: 20px; color: #4a5568; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid #edf2f7;">
-                            Kode & Peminjam</th>
-                        <th
-                            style="width: 15%; padding: 20px; color: #4a5568; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid #edf2f7;">
-                            Status</th>
-                        <th
-                            style="width: 15%; padding: 20px; color: #4a5568; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid #edf2f7;">
-                            Tgl Pinjam</th>
-                        <th
-                            style="width: 15%; padding: 20px; color: #4a5568; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid #edf2f7;">
-                            Petugas</th>
-                        <th
-                            style="width: 30%; padding: 20px; text-align: center; color: #4a5568; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid #edf2f7;">
-                            Aksi</th>
+                    <tr>
+                        <th>Kode & Peminjam</th>
+                        <th>Status</th>
+                        <th>Tanggal</th>
+                        <th>Petugas</th>
+                        <th class="text-center">Aksi</th>
                     </tr>
                 </thead>
+
                 <tbody>
                     @forelse($peminjamans as $p)
-                    <tr class="table-row-hover">
-                        <td style="padding: 20px; border-bottom: 1px solid #edf2f7;">
-                            <div class="d-flex align-items-center">
-                                <div
-                                    style="width: 40px; height: 40px; background: #f0f7ff; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-right: 15px; flex-shrink: 0;">
-                                    <i class="fas fa-file-invoice" style="color: #4299e1;"></i>
+                    <tr>
+
+                        {{-- KODE --}}
+                        <td>
+                            <div class="kode-box">
+                                <div class="icon-box">
+                                    <i class="fas fa-file-alt"></i>
                                 </div>
-                                <div style="overflow: hidden;">
-                                    <span
-                                        style="display: block; font-weight: 700; color: #2d3748; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">#{{ $p->kode_peminjaman }}</span>
-                                    <span
-                                        style="display: block; font-size: 12px; color: #718096; font-weight: 500;">{{ $p->user->name ?? 'Guest' }}</span>
+                                <div>
+                                    <div class="kode">
+                                        #{{ $p->kode_peminjaman }}
+                                    </div>
+                                    <div class="user">
+                                        {{ $p->user->name ?? 'Guest' }}
+                                    </div>
                                 </div>
                             </div>
                         </td>
-                        <td style="padding: 20px; border-bottom: 1px solid #edf2f7;">
+
+                        {{-- STATUS --}}
+                        <td>
                             @php
-                            $statusConfig = [
-                            'menunggu' => ['bg' => '#fef3c7', 'text' => '#92400e', 'label' => 'Pending'],
-                            'disetujui' => ['bg' => '#e0e7ff', 'text' => '#3730a3', 'label' => 'Dipinjam'],
-                            'selesai' => ['bg' => '#d1fae5', 'text' => '#065f46', 'label' => 'Selesai'],
-                            'ditolak' => ['bg' => '#fee2e2', 'text' => '#991b1b', 'label' => 'Ditolak'],
+                            $status = [
+                                'menunggu' => ['bg'=>'rgba(250,204,21,0.15)','text'=>'#facc15','label'=>'Pending'],
+                                'disetujui' => ['bg'=>'rgba(96,165,250,0.15)','text'=>'#60a5fa','label'=>'Dipinjam'],
+                                'selesai' => ['bg'=>'rgba(52,211,153,0.15)','text'=>'#34d399','label'=>'Selesai'],
+                                'ditolak' => ['bg'=>'rgba(248,113,113,0.15)','text'=>'#f87171','label'=>'Ditolak'],
                             ];
-                            $style = $statusConfig[$p->status] ?? ['bg' => '#f3f4f6', 'text' => '#374151', 'label' =>
-                            $p->status];
+                            $s = $status[$p->status] ?? ['bg'=>'rgba(148,163,184,0.15)','text'=>'#94a3b8','label'=>$p->status];
                             @endphp
-                            <span
-                                style="background-color: {{ $style['bg'] }}; color: {{ $style['text'] }}; padding: 6px 14px; border-radius: 8px; font-size: 11px; font-weight: 800; text-transform: uppercase; display: inline-flex; align-items: center; white-space: nowrap;">
-                                <span
-                                    style="width: 6px; height: 6px; background-color: currentColor; border-radius: 50%; margin-right: 8px;"></span>
-                                {{ $style['label'] }}
+
+                            <span class="status-badge"
+                                style="background:{{ $s['bg'] }}; color:{{ $s['text'] }}">
+                                ● {{ $s['label'] }}
                             </span>
                         </td>
-                        <td style="padding: 20px; border-bottom: 1px solid #edf2f7;">
-                            <div style="color: #4a5568; font-size: 13px; font-weight: 600; white-space: nowrap;">
-                                <i class="far fa-calendar-check me-2" style="color: #cbd5e0;"></i>
-                                {{ \Carbon\Carbon::parse($p->tgl_pinjam)->format('d M, Y') }}
+
+                        {{-- TANGGAL --}}
+                        <td>
+                            <div class="tanggal">
+                                <i class="far fa-calendar me-1"></i>
+                                {{ \Carbon\Carbon::parse($p->tgl_pinjam)->format('d M Y') }}
                             </div>
                         </td>
-                        <td style="padding: 20px; border-bottom: 1px solid #edf2f7;">
-                            <span
-                                style="font-size: 13px; color: #4a5568; font-weight: 500; white-space: nowrap;">{{ $p->petugas->name ?? '—' }}</span>
+
+                        {{-- PETUGAS --}}
+                        <td>
+                            <span class="petugas">
+                                {{ $p->petugas->name ?? '-' }}
+                            </span>
                         </td>
-                        <td style="padding: 20px; border-bottom: 1px solid #edf2f7;">
-                            <div style="display: flex; justify-content: center; gap: 10px; flex-wrap: nowrap;">
-                                <a href="{{ route('admin.peminjaman.show', $p->id) }}" class="btn-action-view"
-                                    title="Lihat Detail">
+
+                        {{-- AKSI --}}
+                        <td>
+                            <div class="action-group">
+
+                                <a href="{{ route('admin.peminjaman.show',$p->id) }}"
+                                    class="btn-action view">
                                     <i class="fas fa-eye"></i>
-                                    <span>Detail</span>
                                 </a>
 
-                                <form action="{{ route('admin.peminjaman.destroy', $p->id) }}" method="POST"
-                                    style="margin: 0; display: inline;">
-                                    @csrf @method('DELETE')
-                                    <button type="submit" onclick="return confirm('Hapus transaksi ini?')"
-                                        class="btn-action-delete" title="Hapus Data">
-                                        <i class="fas fa-trash-alt"></i>
-                                        <span>Hapus</span>
+                                <form action="{{ route('admin.peminjaman.destroy',$p->id) }}" method="POST">
+                                    @csrf
+                                    @method('DELETE')
+
+                                    <button class="btn-action delete">
+                                        <i class="fas fa-trash"></i>
                                     </button>
                                 </form>
+
                             </div>
                         </td>
+
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="5" style="padding: 80px; text-align: center;">
-                            <img src="https://illustrations.popsy.co/amber/empty-folder.svg" alt="Empty"
-                                style="width: 120px; margin-bottom: 20px; opacity: 0.5;">
-                            <p style="color: #a0aec0; font-size: 16px; font-weight: 500;">Belum ada data ditemukan.</p>
+                        <td colspan="5" class="empty">
+                            <i class="fas fa-inbox"></i>
+                            <p>Tidak ada transaksi</p>
                         </td>
                     </tr>
                     @endforelse
                 </tbody>
+
             </table>
+
         </div>
     </div>
 
-    <div class="mt-4 d-flex justify-content-between align-items-center">
-        <p style="font-size: 13px; color: #718096; margin: 0;">Menampilkan {{ $peminjamans->firstItem() ?? 0 }} -
-            {{ $peminjamans->lastItem() ?? 0 }} dari {{ $peminjamans->total() }} data</p>
-        <div>{{ $peminjamans->links() }}</div>
+    {{-- PAGINATION --}}
+    <div class="pagination-wrap">
+        <small>
+            {{ $peminjamans->total() }} data
+        </small>
+        {{ $peminjamans->links() }}
     </div>
+
 </div>
 
+{{-- STYLE --}}
 <style>
-.table-row-hover:hover {
-    background-color: #fcfdfe !important;
+
+/* WRAPPER */
+.main-wrapper {
+    padding: 25px;
 }
 
-/* Desain tombol aksi dengan Flexbox agar Ikon & Teks Sejajar */
-.btn-action-view,
-.btn-action-delete {
-    display: inline-flex;
+/* HEADER */
+.header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.title {
+    font-weight: 700;
+    color: #e2e8f0;
+}
+
+.subtitle {
+    font-size: 13px;
+    color: #94a3b8;
+}
+
+/* TIME BADGE */
+.badge-time {
+    background: rgba(59,130,246,0.15);
+    color: #93c5fd;
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-size: 12px;
+}
+
+/* CARD */
+.card-modern {
+    background: rgba(255,255,255,0.04);
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.05);
+    backdrop-filter: blur(12px);
+}
+
+/* TABLE */
+.table-modern {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table-modern th {
+    padding: 15px;
+    font-size: 11px;
+    color: #94a3b8;
+    text-transform: uppercase;
+}
+
+.table-modern td {
+    padding: 15px;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    color: #e2e8f0;
+}
+
+.table-modern tr:hover {
+    background: rgba(255,255,255,0.03);
+}
+
+/* KODE */
+.kode-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.icon-box {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: rgba(59,130,246,0.15);
+    display: flex;
     align-items: center;
     justify-content: center;
-    padding: 8px 16px;
-    background: #fff;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    transition: all 0.2s;
-    text-decoration: none;
-    cursor: pointer;
-    white-space: nowrap;
-    /* Mencegah teks turun ke bawah */
+    color: #93c5fd;
 }
 
-/* Memberi jarak antara ikon dan teks */
-.btn-action-view i,
-.btn-action-delete i {
-    margin-right: 8px;
-    font-size: 14px;
+.kode {
+    font-weight: 600;
 }
 
-/* Ukuran font keterangan */
-.btn-action-view span,
-.btn-action-delete span {
+.user {
     font-size: 12px;
-    font-weight: 700;
+    color: #94a3b8;
 }
 
-/* Warna Tombol Detail */
-.btn-action-view {
-    color: #4e73df;
+/* STATUS */
+.status-badge {
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
 }
 
-.btn-action-view:hover {
-    background: #4e73df !important;
-    color: white !important;
-    border-color: #4e73df;
-    box-shadow: 0 4px 10px rgba(78, 115, 223, 0.15);
+/* TANGGAL */
+.tanggal {
+    font-size: 13px;
+    color: #cbd5f5;
 }
 
-/* Warna Tombol Hapus */
-.btn-action-delete {
-    color: #e53e3e;
+/* PETUGAS */
+.petugas {
+    font-size: 13px;
+    color: #cbd5f5;
 }
 
-.btn-action-delete:hover {
-    background: #e53e3e !important;
-    color: white !important;
-    border-color: #e53e3e;
-    box-shadow: 0 4px 10px rgba(229, 62, 62, 0.15);
+/* ACTION */
+.action-group {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
 }
+
+.btn-action {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-action.view {
+    background: rgba(59,130,246,0.15);
+    color: #93c5fd;
+}
+
+.btn-action.delete {
+    background: rgba(248,113,113,0.15);
+    color: #f87171;
+}
+
+.btn-action:hover {
+    transform: scale(1.1);
+}
+
+/* EMPTY */
+.empty {
+    text-align: center;
+    padding: 50px;
+    color: #94a3b8;
+}
+
+.empty i {
+    font-size: 28px;
+    margin-bottom: 10px;
+}
+
+/* PAGINATION */
+.pagination-wrap {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+    color: #94a3b8;
+}
+
 </style>
+
 @endsection

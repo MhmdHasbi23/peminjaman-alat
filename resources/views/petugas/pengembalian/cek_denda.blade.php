@@ -1,157 +1,154 @@
 @extends('layouts.petugas')
 
 @section('content')
-<div class="container-fluid px-4" style="margin-top: 40px; font-family: 'Inter', 'Segoe UI', sans-serif;">
-    <div
-        style="max-width: 600px; margin: auto; background: white; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; overflow: hidden;">
+<div class="container-fluid px-4" style="margin-top: 30px; font-family: 'Inter', sans-serif;">
 
-        {{-- Header Gradasi --}}
-        <div
-            style="background: linear-gradient(135deg, #4e73df 0%, #224abe 100%); padding: 30px; color: white; text-align: center;">
-            <div
-                style="width: 60px; height: 60px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px;">
-                <i class="fas fa-calculator" style="font-size: 24px;"></i>
-            </div>
-            <h5 style="margin: 0; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;">Kalkulasi
-                Pengembalian</h5>
-            <p style="margin: 5px 0 0 0; font-size: 0.8rem; opacity: 0.8;">Validasi kondisi barang dan hitung total
-                denda</p>
+    <div style="max-width: 650px; margin: auto;">
+
+        <!-- HEADER -->
+        <div style="margin-bottom:20px;">
+            <h4 style="font-weight:800; color:#e5e7eb;">
+                <i class="fas fa-calculator text-primary me-2"></i> Kalkulasi Pengembalian
+            </h4>
+            <p style="color:#94a3b8; font-size:0.9rem;">
+                Validasi kondisi barang dan hitung total denda
+            </p>
         </div>
 
-        <div style="padding: 35px;">
-            <form action="{{ route('petugas.pengembalian.simpan', $peminjaman->id) }}" method="POST"
-                id="formPengembalian">
-                @csrf
+        <!-- CARD -->
+        <div style="
+            background: rgba(15,23,42,0.7);
+            backdrop-filter: blur(12px);
+            border-radius:20px;
+            border:1px solid rgba(255,255,255,0.08);
+            box-shadow:0 20px 40px rgba(0,0,0,0.4);
+            overflow:hidden;
+        ">
 
-                {{-- Ringkasan Identitas --}}
-                <div class="d-flex justify-content-between mb-4 pb-3" style="border-bottom: 1px dashed #e2e8f0;">
-                    <div>
-                        <small
-                            style="display:block; color: #a0aec0; font-weight: 800; font-size: 10px; text-transform: uppercase;">Peminjam</small>
-                        <span style="font-weight: 700; color: #2d3748;">{{ $peminjaman->user->name }}</span>
+            <!-- HEADER -->
+            <div style="
+                background: linear-gradient(135deg,#3b82f6,#2563eb);
+                padding:25px;
+                text-align:center;
+                color:white;
+            ">
+                <i class="fas fa-calculator" style="font-size:28px;"></i>
+                <h5 style="margin:10px 0 0;font-weight:800;">Kalkulasi Pengembalian</h5>
+            </div>
+
+            <div style="padding:30px;">
+                <form action="{{ route('petugas.pengembalian.simpan', $peminjaman->id) }}" method="POST" id="formPengembalian">
+                    @csrf
+
+                    <!-- IDENTITAS -->
+                    <div class="d-flex justify-content-between mb-4 pb-3" style="border-bottom:1px dashed rgba(255,255,255,0.1);">
+                        <div>
+                            <small style="color:#64748b;">Peminjam</small><br>
+                            <span style="font-weight:700; color:#e5e7eb;">{{ $peminjaman->user->name }}</span>
+                        </div>
+                        <div class="text-end">
+                            <small style="color:#64748b;">Kode</small><br>
+                            <span style="color:#60a5fa; font-weight:700;">#{{ $peminjaman->kode_peminjaman }}</span>
+                        </div>
                     </div>
-                    <div class="text-end">
-                        <small
-                            style="display:block; color: #a0aec0; font-weight: 800; font-size: 10px; text-transform: uppercase;">Kode
-                            Transaksi</small>
-                        <span
-                            style="font-family: 'JetBrains Mono', monospace; font-weight: 700; color: #4e73df;">#{{ $peminjaman->kode_peminjaman }}</span>
-                    </div>
-                </div>
 
-                {{-- Daftar Alat --}}
-                <div
-                    style="background: #f8fafc; border-radius: 12px; padding: 18px; border: 1px solid #edf2f7; margin-bottom: 25px;">
-                    <small
-                        style="color: #64748b; font-weight: 800; font-size: 11px; text-transform: uppercase; display: block; margin-bottom: 10px;">Item
-                        Dikembalikan:</small>
-                    @foreach($peminjaman->detailPeminjaman as $detail)
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span
-                            style="font-size: 14px; color: #334155; font-weight: 500;">{{ $detail->alat->nama_alat }}</span>
-                        <span class="badge"
-                            style="background: white; border: 1px solid #e2e8f0; color: #4e73df; font-weight: 700;">{{ $detail->jumlah }}
-                            Unit</span>
-                    </div>
-                    @endforeach
-                </div>
-
-                {{-- Panel Hitung Denda --}}
-                <div style="background: #ffffff; border: 2px solid #f1f5f9; border-radius: 15px; padding: 20px;">
-
-                    <div class="mb-4">
+                    <!-- DAFTAR ALAT -->
+                    <div style="background: rgba(255,255,255,0.03); padding:15px; border-radius:12px; margin-bottom:20px;">
+                        @foreach($peminjaman->detailPeminjaman as $detail)
                         <div class="d-flex justify-content-between mb-2">
-                            <label
-                                style="font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase;">1.
-                                Denda Terlambat ({{ $hari_terlambat }} Hari)</label>
-                            @if($hari_terlambat > 0)
-                            <span class="badge bg-danger" style="font-size: 9px;">Terlambat</span>
-                            @else
-                            <span class="badge bg-success" style="font-size: 9px;">Tepat Waktu</span>
-                            @endif
+                            <span style="color:#cbd5f5;">{{ $detail->alat->nama_alat }}</span>
+                            <span style="color:#60a5fa; font-weight:700;">{{ $detail->jumlah }} unit</span>
                         </div>
-                        <div class="input-group">
-                            <span class="input-group-text"
-                                style="background: #f8fafc; border-right: none; font-weight: 700; color: #64748b;">Rp</span>
-                            <input type="number" id="denda_terlambat" class="form-control"
+                        @endforeach
+                    </div>
+
+                    <!-- DENDA -->
+                    <div style="background: rgba(255,255,255,0.02); border-radius:15px; padding:20px;">
+
+                        <div class="mb-4">
+                            <label style="font-size:12px; color:#94a3b8;">
+                                Denda Terlambat ({{ $hari_terlambat }} Hari)
+                            </label>
+                            <input type="number" id="denda_terlambat"
+                                class="form-control mt-2"
                                 value="{{ $denda_terlambat }}" readonly
-                                style="background: #f8fafc; font-weight: 700; border-left: none; color: #64748b;">
+                                style="background:#020617; color:#94a3b8; border:none;">
+                        </div>
+
+                        <div class="mb-4">
+                            <label style="font-size:12px; color:#f87171;">
+                                Denda Kerusakan / Kehilangan
+                            </label>
+                            <input type="number" id="denda_tambahan" name="denda_tambahan"
+                                class="form-control mt-2"
+                                value="0"
+                                style="background:#020617; color:#f87171; border:none;">
+                        </div>
+
+                        <div class="text-center mt-4">
+                            <small style="color:#94a3b8;">Total Denda</small>
+                            <h2 id="display_total" style="color:white; font-weight:800;">
+                                Rp {{ number_format($denda_terlambat, 0, ',', '.') }}
+                            </h2>
+
+                            <input type="hidden" name="denda" id="denda_final"
+                                value="{{ $denda_terlambat }}">
                         </div>
                     </div>
 
-                    <div class="mb-4">
-                        <label
-                            style="font-size: 11px; font-weight: 800; color: #e11d48; text-transform: uppercase; display: block; margin-bottom: 8px;">2.
-                            Denda Kerusakan / Kehilangan</label>
-                        <div class="input-group">
-                            <span class="input-group-text"
-                                style="background: white; border-right: none; color: #e11d48; font-weight: 800;">Rp</span>
-                            <input type="number" id="denda_tambahan" name="denda_tambahan" class="form-control"
-                                value="0" min="0" placeholder="0"
-                                style="border-left: none; font-weight: 700; color: #e11d48;">
-                        </div>
-                        <small
-                            style="font-size: 10px; color: #94a3b8; font-style: italic; margin-top: 5px; display: block;">*Masukkan
-                            nominal denda jika barang rusak atau hilang</small>
+                    <!-- CATATAN -->
+                    <div class="mt-4">
+                        <textarea name="catatan" id="catatan"
+                            class="form-control"
+                            placeholder="Catatan alasan denda..."
+                            style="background:#020617; color:white; border:none; border-radius:12px;"></textarea>
                     </div>
 
-                    <div style="border-top: 2px dashed #edf2f7; margin: 20px 0;"></div>
+                    <!-- BUTTON -->
+                    <div class="mt-4">
+                        <button type="submit" id="btnSimpanPengembalian"
+                            style="width:100%; padding:12px; border:none; border-radius:12px;
+                            background: linear-gradient(135deg,#22c55e,#16a34a);
+                            color:white; font-weight:700;">
+                            ✔ Selesaikan
+                        </button>
 
-                    <div class="text-center">
-                        <label
-                            style="font-size: 11px; font-weight: 800; color: #1e293b; text-transform: uppercase; letter-spacing: 1px;">Total
-                            Bayar Denda</label>
-                        <h2 style="color: #1e293b; font-weight: 900; margin: 5px 0; font-size: 2.2rem;"
-                            id="display_total">
-                            Rp {{ number_format($denda_terlambat, 0, ',', '.') }}
-                        </h2>
-                        {{-- Input Hidden yang dikirim ke database --}}
-                        <input type="hidden" name="denda" id="denda_final" value="{{ $denda_terlambat }}">
+                        <a href="{{ route('petugas.pengembalian.index') }}"
+                            id="btnKembali"
+                            style="display:block; text-align:center; margin-top:10px; color:#94a3b8;">
+                            Kembali
+                        </a>
                     </div>
-                </div>
 
-                <div class="mt-4 mb-4">
-                    <label
-                        style="font-size: 11px; font-weight: 800; color: #4a5568; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; display: block;">Catatan
-                        Alasan Denda</label>
-                    <textarea name="catatan" class="form-control" rows="3"
-                        placeholder="Contoh: Terlambat 2 hari & obeng hilang 1..."
-                        style="border-radius: 12px; font-size: 14px; border: 1px solid #e2e8f0;"></textarea>
-                </div>
-
-                {{-- Tombol Aksi --}}
-                <div class="d-flex flex-column gap-2">
-                    <button type="submit" class="btn btn-success py-3"
-                        style="border-radius: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 4px 12px rgba(28, 200, 138, 0.2);"
-                        onclick="return confirm('Selesaikan transaksi? Pastikan denda sudah diterima.')">
-                        <i class="fas fa-check-circle me-2"></i> Terima & Selesaikan
-                    </button>
-                    <a href="{{ route('petugas.pengembalian.index') }}" class="btn btn-link text-muted"
-                        style="font-size: 13px; text-decoration: none; font-weight: 600;">Kembali</a>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
 </div>
+@endsection
 
-{{-- Script Kalkulasi Otomatis --}}
+
+@section('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+
     const inputTelat = document.getElementById('denda_terlambat');
     const inputTambahan = document.getElementById('denda_tambahan');
     const displayTotal = document.getElementById('display_total');
     const inputFinal = document.getElementById('denda_final');
+    const formPengembalian = document.getElementById('formPengembalian');
+    const btnSimpan = document.getElementById('btnSimpanPengembalian');
+    const btnKembali = document.getElementById('btnKembali');
+    const catatan = document.getElementById('catatan');
 
     function formatRupiah(angka) {
         return 'Rp ' + angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
 
     function kalkulasi() {
-        // Gunakan Math.abs() untuk memaksa angka menjadi positif
         const telat = Math.abs(parseInt(inputTelat.value)) || 0;
         let tambahan = parseInt(inputTambahan.value) || 0;
-        
-        // Jika petugas menginput angka negatif, otomatis ubah jadi positif
+
         if (tambahan < 0) {
             tambahan = Math.abs(tambahan);
             inputTambahan.value = tambahan;
@@ -164,23 +161,41 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     inputTambahan.addEventListener('input', kalkulasi);
+
+    // SweetAlert submit
+    btnSimpan.addEventListener('click', function(e) {
+        e.preventDefault();
+
+        const totalDenda = parseInt(inputFinal.value) || 0;
+        const isiCatatan = catatan.value.trim();
+        const dendaTambahan = parseInt(inputTambahan.value) || 0;
+
+        if (dendaTambahan > 0 && isiCatatan === '') {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Catatan wajib diisi!',
+                text: 'Isi alasan denda tambahan.',
+                confirmButtonColor: '#e11d48'
+            });
+            return;
+        }
+
+        Swal.fire({
+            title: 'Selesaikan Transaksi?',
+            text: 'Total Denda: ' + formatRupiah(totalDenda),
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#22c55e',
+            cancelButtonColor: '#ef4444',
+            confirmButtonText: 'Ya, Selesaikan!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                formPengembalian.submit();
+            }
+        });
+    });
+
 });
 </script>
-
-<style>
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
-
-input[type=number] {
-    -moz-appearance: textfield;
-}
-
-.form-control:focus {
-    border-color: #4e73df;
-    box-shadow: none;
-}
-</style>
 @endsection

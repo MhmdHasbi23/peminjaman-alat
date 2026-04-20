@@ -1,164 +1,211 @@
 @extends('layouts.admin')
 
 @section('content')
-<div class="container-fluid px-4" style="margin-top: 25px; font-family: 'Inter', sans-serif;">
+<div class="container-fluid px-4" style="margin-top: 25px; font-family: 'Inter', sans-serif; color:#cbd5f5;">
 
-    {{-- Welcome Header --}}
-    <div class="row mb-4 align-items-center">
-        <div class="col-md-8">
-            <h4 style="font-weight: 800; color: #1a202c; margin: 0; letter-spacing: -0.5px;">
-                <i class="fas fa-th-large me-2" style="color: #4e73df;"></i> Dashboard Utama
+    {{-- HEADER --}}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 style="font-weight: 700; margin: 0;">
+                <i class="fas fa-th-large me-2" style="color:#93c5fd;"></i> Dashboard
             </h4>
-            <p style="color: #718096; font-size: 0.9rem; margin: 5px 0 0 0;">Halo,
-                <strong>{{ auth()->user()->name }}</strong>. Berikut adalah ringkasan sistem hari ini.</p>
+            <small style="color:#94a3b8;">Halo, {{ auth()->user()->name }}</small>
+        </div>
+
+        <div style="
+            background: rgba(255,255,255,0.05);
+            padding:10px 16px;
+            border-radius:12px;
+            font-size:13px;
+            border:1px solid rgba(255,255,255,0.05);
+        ">
+            <i class="fas fa-calendar-alt me-2"></i>
+            {{ now()->translatedFormat('d F Y') }}
         </div>
     </div>
-    <div class="row mb-4 align-items-center">
-        <div class="col-md-4 text-md-end">
-            <span class="badge"
-                style="background: white; color: #4e73df; padding: 12px 20px; border-radius: 12px; font-weight: 700; box-shadow: 0 4px 6px rgba(0,0,0,0.02); border: 1px solid #e2e8f0;">
-                <i class="fas fa-calendar-alt me-2"></i> {{ now()->translatedFormat('d F Y') }}
-            </span>
+
+    {{-- STAT --}}
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;margin-bottom:30px;">
+
+        @php
+        $cards = [
+        ['title'=>'Total Inventaris','value'=>$total_alat,'icon'=>'tools','color'=>'#60a5fa'],
+        ['title'=>'Menunggu','value'=>$pinjam_menunggu,'icon'=>'hourglass-half','color'=>'#fbbf24'],
+        ['title'=>'Dipinjam','value'=>$pinjam_aktif,'icon'=>'exchange-alt','color'=>'#34d399'],
+        ];
+        @endphp
+
+        @foreach($cards as $c)
+        <div class="stat-card" style="
+            background: rgba(255,255,255,0.05);
+            border-radius:18px;
+            padding:22px;
+            border:1px solid rgba(255,255,255,0.05);
+            position:relative;
+            overflow:hidden;
+            transition:0.3s;
+        ">
+
+            {{-- glow --}}
+            <div style="
+                position:absolute;
+                width:120px;
+                height:120px;
+                background: {{ $c['color'] }};
+                filter: blur(70px);
+                opacity:0.15;
+                top:-30px;
+                right:-30px;
+            "></div>
+
+            <div class="d-flex justify-content-between align-items-center">
+
+                <div>
+                    <div style="font-size:11px;color:#94a3b8;">
+                        {{ $c['title'] }}
+                    </div>
+                    <div style="font-size:28px;font-weight:700;">
+                        {{ $c['value'] }}
+                    </div>
+                </div>
+
+                <div style="
+                    width:45px;
+                    height:45px;
+                    border-radius:12px;
+                    background: rgba(255,255,255,0.08);
+                    display:flex;
+                    align-items:center;
+                    justify-content:center;
+                    font-size:18px;
+                    color: {{ $c['color'] }};
+                ">
+                    <i class="fas fa-{{ $c['icon'] }}"></i>
+                </div>
+
+            </div>
         </div>
+        @endforeach
     </div>
 
-    {{-- Stats Grid --}}
-    <div
-        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 30px;">
-
-        {{-- Total Alat --}}
-        <div
-            style="background: white; padding: 25px; border-radius: 20px; border-left: 6px solid #4e73df; box-shadow: 0 10px 15px rgba(0,0,0,0.03); position: relative; overflow: hidden;">
-            <div style="position: absolute; right: 15px; bottom: 15px; opacity: 0.1; font-size: 50px; color: #4e73df;">
-                <i class="fas fa-tools"></i>
-            </div>
-            <div
-                style="font-size: 11px; font-weight: 800; color: #4e73df; text-transform: uppercase; letter-spacing: 1px;">
-                Total Inventaris</div>
-            <div style="font-size: 28px; font-weight: 800; color: #2d3748; margin-top: 5px;">
-                {{ $total_alat }} <span style="font-size: 14px; font-weight: 500; color: #718096;">Alat</span>
-            </div>
-        </div>
-
-        {{-- Menunggu Persetujuan --}}
-        <div
-            style="background: white; padding: 25px; border-radius: 20px; border-left: 6px solid #f6c23e; box-shadow: 0 10px 15px rgba(0,0,0,0.03); position: relative; overflow: hidden;">
-            <div style="position: absolute; right: 15px; bottom: 15px; opacity: 0.1; font-size: 50px; color: #f6c23e;">
-                <i class="fas fa-hourglass-half"></i>
-            </div>
-            <div
-                style="font-size: 11px; font-weight: 800; color: #f6c23e; text-transform: uppercase; letter-spacing: 1px;">
-                Perlu Persetujuan</div>
-            <div style="font-size: 28px; font-weight: 800; color: #2d3748; margin-top: 5px;">
-                {{ $pinjam_menunggu }} <span style="font-size: 14px; font-weight: 500; color: #718096;">Data</span>
-            </div>
-        </div>
-
-        {{-- Sedang Dipinjam --}}
-        <div
-            style="background: white; padding: 25px; border-radius: 20px; border-left: 6px solid #1cc88a; box-shadow: 0 10px 15px rgba(0,0,0,0.03); position: relative; overflow: hidden;">
-            <div style="position: absolute; right: 15px; bottom: 15px; opacity: 0.1; font-size: 50px; color: #1cc88a;">
-                <i class="fas fa-exchange-alt"></i>
-            </div>
-            <div
-                style="font-size: 11px; font-weight: 800; color: #1cc88a; text-transform: uppercase; letter-spacing: 1px;">
-                Sedang Dipinjam</div>
-            <div style="font-size: 28px; font-weight: 800; color: #2d3748; margin-top: 5px;">
-                {{ $pinjam_aktif }} <span style="font-size: 14px; font-weight: 500; color: #718096;">Transaksi</span>
-            </div>
-        </div>
-
-        <!-- {{-- Kas Denda --}}
-        <div
-            style="background: white; padding: 25px; border-radius: 20px; border-left: 6px solid #e74a3b; box-shadow: 0 10px 15px rgba(0,0,0,0.03); position: relative; overflow: hidden;">
-            <div style="position: absolute; right: 15px; bottom: 15px; opacity: 0.1; font-size: 50px; color: #e74a3b;">
-                <i class="fas fa-hand-holding-usd"></i>
-            </div>
-            <div
-                style="font-size: 11px; font-weight: 800; color: #e74a3b; text-transform: uppercase; letter-spacing: 1px;">
-                Total Kas Denda</div>
-            <div style="font-size: 24px; font-weight: 800; color: #2d3748; margin-top: 5px;">
-                Rp {{ number_format($total_denda, 0, ',', '.') }}
-            </div>
-        </div> -->
-    </div>
-
-    {{-- Main Content Row --}}
+    {{-- MAIN --}}
     <div class="row">
-        {{-- Activity Log --}}
+
+        {{-- LOG --}}
         <div class="col-lg-8 mb-4">
-            <div
-                style="background: white; border-radius: 20px; padding: 25px; box-shadow: 0 10px 15px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; height: 100%;">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h5 style="font-weight: 800; color: #2d3748; margin: 0; font-size: 16px;">📜 Log Aktivitas Terbaru
-                    </h5>
-                    <a href="{{ route('admin.log.index') }}"
-                        style="font-size: 12px; color: #4e73df; text-decoration: none; font-weight: 700; background: #ebf4ff; padding: 6px 12px; border-radius: 8px;">Lihat
-                        Semua</a>
+            <div class="glass-card">
+                <div class="d-flex justify-content-between mb-3">
+                    <h5 style="font-size:15px;">📜 Aktivitas</h5>
+                    <a href="{{ route('admin.log.index') }}" class="btn-soft">Lihat</a>
                 </div>
-                <div class="table-responsive">
-                    <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
-                        @forelse($recent_logs as $log)
-                        <tr style="border-bottom: 1px solid #f8fafc;">
-                            <td style="padding: 15px 0;">
-                                <div style="font-weight: 700; color: #4e73df; font-size: 14px;">
-                                    {{ $log->user->name ?? 'System' }}</div>
-                                <div style="color: #718096; margin-top: 2px;">{{ $log->deskripsi }}</div>
-                            </td>
-                            <td style="padding: 15px 0; color: #a0aec0; text-align: right; white-space: nowrap;">
-                                <i class="far fa-clock me-1"></i> {{ $log->created_at->diffForHumans() }}
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="2" style="text-align: center; padding: 40px; color: #a0aec0;">
-                                <img src="https://illustrations.popsy.co/gray/not-found.svg"
-                                    style="height: 100px; margin-bottom: 15px; opacity: 0.5; display: block; margin-left: auto; margin-right: auto;">
-                                Belum ada aktivitas tercatat.
-                            </td>
-                        </tr>
-                        @endforelse
-                    </table>
+
+                @forelse($recent_logs as $log)
+                <div style="
+                    display:flex;
+                    justify-content:space-between;
+                    padding:12px 0;
+                    border-bottom:1px solid rgba(255,255,255,0.05);
+                ">
+                    <div>
+                        <div style="font-weight:600;">{{ $log->user->name ?? 'System' }}</div>
+                        <div style="color:#94a3b8;font-size:13px;">{{ $log->deskripsi }}</div>
+                    </div>
+                    <div style="font-size:12px;color:#64748b;">
+                        {{ $log->created_at->diffForHumans() }}
+                    </div>
                 </div>
+                @empty
+                <div style="text-align:center;padding:25px;color:#64748b;">
+                    Belum ada aktivitas
+                </div>
+                @endforelse
             </div>
         </div>
 
-        {{-- Sidebar Content --}}
+        {{-- SIDE --}}
         <div class="col-lg-4 mb-4">
-            {{-- Stok Menipis --}}
-            <div
-                style="background: #fff5f5; border-radius: 20px; padding: 25px; border: 1px solid #feb2b2; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(197, 48, 48, 0.05);">
-                <h5 style="font-weight: 800; color: #c53030; margin-bottom: 15px; font-size: 15px;">
-                    <i class="fas fa-exclamation-triangle me-2"></i> Stok Menipis (< 5) </h5>
-                        <div style="max-height: 300px; overflow-y: auto;">
-                            @forelse($stok_menipis as $a)
-                            <div
-                                style="background: white; padding: 12px 15px; border-radius: 12px; margin-bottom: 10px; border: 1px solid #fed7d7; display: flex; justify-content: space-between; align-items: center;">
-                                <span
-                                    style="font-weight: 600; color: #2d3748; font-size: 13px;">{{ $a->nama_alat }}</span>
-                                <span class="badge bg-danger" style="border-radius: 6px; padding: 6px 10px;">Sisa:
-                                    {{ $a->stok }}</span>
-                            </div>
-                            @empty
-                            <div style="text-align: center; opacity: 0.7; padding: 20px; color: #c53030;">
-                                <i class="fas fa-check-circle fa-2x mb-2" style="display: block;"></i>
-                                <span style="font-size: 13px; font-weight: 600;">Semua stok alat aman.</span>
-                            </div>
-                            @endforelse
-                        </div>
+
+            {{-- STOK --}}
+            <div class="glass-card danger">
+                <h6 style="margin-bottom:12px;">
+                    <i class="fas fa-exclamation-triangle me-2"></i> Stok Menipis
+                </h6>
+
+                @forelse($stok_menipis as $a)
+                <div class="mini-card">
+                    <span>{{ $a->nama_alat }}</span>
+                    <span class="badge-soft">{{ $a->stok }}</span>
+                </div>
+                @empty
+                <div style="text-align:center;font-size:12px;">Aman</div>
+                @endforelse
             </div>
 
-            {{-- Info Card --}}
-            <div style="background: #ebf4ff; border-radius: 20px; padding: 20px; border: 1px solid #bee3f8;">
-                <h6 style="font-weight: 700; color: #2b6cb0; font-size: 14px; margin-bottom: 10px;">
-                    <i class="fas fa-lightbulb me-2"></i> Tips Admin
-                </h6>
-                <p style="font-size: 12px; color: #2c5282; line-height: 1.6; margin: 0;">
-                    Lakukan pengecekan berkala pada menu <strong>Log Aktivitas</strong> untuk memantau tindakan petugas
-                    dan sirkulasi inventaris sekolah.
+            {{-- TIPS --}}
+            <div class="glass-card info">
+                <h6>💡 Tips</h6>
+                <p style="font-size:12px;color:#94a3b8;">
+                    Pantau log aktivitas untuk kontrol sistem lebih baik.
                 </p>
             </div>
+
         </div>
     </div>
 </div>
+
+<style>
+/* reusable */
+.glass-card{
+    background: rgba(255,255,255,0.05);
+    padding:20px;
+    border-radius:16px;
+    border:1px solid rgba(255,255,255,0.05);
+    backdrop-filter: blur(10px);
+    margin-bottom:20px;
+}
+
+.glass-card:hover{
+    transform: translateY(-3px);
+}
+
+.btn-soft{
+    background: rgba(59,130,246,0.15);
+    padding:6px 10px;
+    border-radius:8px;
+    font-size:12px;
+    color:#93c5fd;
+    text-decoration:none;
+}
+
+.mini-card{
+    display:flex;
+    justify-content:space-between;
+    background: rgba(255,255,255,0.05);
+    padding:10px;
+    border-radius:10px;
+    margin-bottom:8px;
+    font-size:13px;
+}
+
+.badge-soft{
+    background: rgba(248,113,113,0.2);
+    padding:4px 8px;
+    border-radius:6px;
+    font-size:12px;
+}
+
+.stat-card:hover{
+    transform: translateY(-5px) scale(1.01);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+}
+
+/* color variant */
+.danger{
+    border:1px solid rgba(248,113,113,0.2);
+}
+.info{
+    border:1px solid rgba(59,130,246,0.2);
+}
+</style>
+
 @endsection

@@ -21,8 +21,17 @@ class KategoriController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate(['nama_kategori' => 'required|string|max:255']);
-        Kategori::create($request->all());
+        $request->validate([
+            'nama_kategori' => 'required|string|max:255',
+        ], [
+            'nama_kategori.required' => 'Nama kategori wajib diisi.',
+            'nama_kategori.max' => 'Nama kategori maksimal 255 karakter.',
+        ]);
+
+        Kategori::create([
+            'nama_kategori' => $request->nama_kategori,
+        ]);
+
         return redirect()->route('admin.kategori.index')->with('success', 'Kategori berhasil ditambah');
     }
 
@@ -33,8 +42,17 @@ class KategoriController extends Controller
 
     public function update(Request $request, Kategori $kategori)
     {
-        $request->validate(['nama_kategori' => 'required|string|max:255']);
-        $kategori->update($request->all());
+        $request->validate([
+            'nama_kategori' => 'required|string|max:255',
+        ], [
+            'nama_kategori.required' => 'Nama kategori wajib diisi.',
+            'nama_kategori.max' => 'Nama kategori maksimal 255 karakter.',
+        ]);
+
+        $kategori->update([
+            'nama_kategori' => $request->nama_kategori,
+        ]);
+
         return redirect()->route('admin.kategori.index')->with('success', 'Kategori diperbarui');
     }
 
@@ -44,7 +62,9 @@ class KategoriController extends Controller
         if ($kategori->alats()->count() > 0) {
             return back()->with('error', 'Kategori tidak bisa dihapus karena masih digunakan oleh data alat.');
         }
+
         $kategori->delete();
+
         return redirect()->route('admin.kategori.index')->with('success', 'Kategori dihapus');
     }
 }

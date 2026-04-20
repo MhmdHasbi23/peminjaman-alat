@@ -5,118 +5,265 @@
     <meta charset="UTF-8">
     <title>@yield('title', 'Dashboard Siswa')</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     @vite(['resources/css/app.css','resources/js/app.js'])
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
     <style>
-    /* MENGUNCI SIDEBAR AGAR TIDAK BISA DI-SCROLL */
-    #sidebar-siswa {
+    body {
+        margin: 0;
+        min-height: 100vh;
+        background: radial-gradient(circle at top left, #0f172a, #020617 70%);
+        color: #e5e7eb;
+        font-family: 'Inter', sans-serif;
+    }
+
+    /* NAVBAR (SAMA PERSIS ADMIN) */
+    .navbar {
         position: fixed;
-        /* Kunci posisi di layar */
         top: 0;
         left: 0;
-        height: 100vh;
-        /* Tinggi pas satu layar */
-        width: 16rem;
-        /* Lebar w-64 */
-        z-index: 50;
+        width: 100%;
+        height: 70px;
         display: flex;
-        flex-direction: column;
-        background-color: white;
-        border-right: 1px solid #e5e7eb;
-        box-shadow: 4px 0 6px -1px rgba(0, 0, 0, 0.05);
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 25px;
+        background: rgba(2, 6, 23, 0.8);
+        backdrop-filter: blur(12px);
+        z-index: 100;
     }
 
-    /* MEMBERI RUANG UNTUK KONTEN DI KANAN AGAR TIDAK TERTUTUP */
-    .main-content {
-        margin-left: 16rem;
-        /* Harus sama dengan lebar sidebar */
-        width: calc(100% - 16rem);
-        min-height: 100vh;
+    .logo {
+        font-weight: bold;
+        color: #60a5fa;
+        font-size: 18px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
     }
 
-    /* Navigasi di dalam sidebar jika suatu saat menu bertambah banyak */
+    .nav-center {
+        width: 30%;
+        position: relative;
+    }
+
+    .nav-center input {
+        width: 100%;
+        padding: 10px 15px 10px 40px;
+        border-radius: 12px;
+        border: none;
+        background: rgba(255, 255, 255, 0.05);
+        color: white;
+        outline: none;
+    }
+
+    .nav-center i {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #64748b;
+    }
+
+    .nav-right {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .icon-btn {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.05);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+    }
+
+    .icon-btn:hover {
+        background: rgba(59, 130, 246, 0.2);
+    }
+
+    .user-menu {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(255, 255, 255, 0.05);
+        padding: 6px 12px;
+        border-radius: 12px;
+    }
+
+    /* SIDEBAR (SAMA PERSIS ADMIN) */
+    #sidebar-siswa {
+        position: fixed;
+        top: 70px;
+        left: 0;
+        width: 16rem;
+        height: calc(100vh - 70px);
+        background: rgba(2, 6, 23, 0.8);
+        backdrop-filter: blur(12px);
+        padding: 15px;
+    }
+
+    .user-info {
+        margin-bottom: 10px;
+    }
+
+    .user-info small {
+        color: #64748b;
+        font-size: 12px;
+    }
+
+    .user-info strong {
+        display: block;
+        margin-top: 2px;
+    }
+
     .nav-wrapper {
-        flex: 1;
         overflow-y: auto;
-        padding: 1rem;
     }
 
-    /* Menghilangkan scrollbar utama browser jika diperlukan agar lebih bersih */
-    body {
-        overflow-x: hidden;
+    .section-title {
+        font-size: 11px;
+        color: #475569;
+        margin: 15px 10px;
+    }
+
+    .nav-item {
+        display: flex;
+        align-items: center;
+        padding: 12px;
+        border-radius: 12px;
+        margin-bottom: 6px;
+        color: #94a3b8;
+        text-decoration: none;
+        transition: 0.3s;
+    }
+
+    .nav-item i {
+        width: 22px;
+        margin-right: 10px;
+    }
+
+    .nav-item:hover {
+        background: rgba(59, 130, 246, 0.15);
+        color: #60a5fa;
+        transform: translateX(5px);
+    }
+
+    .nav-active {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        color: white !important;
+        box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+    }
+
+    /* MAIN CONTENT (SAMA ADMIN) */
+    .main-content {
+        margin-top: 70px;
+        margin-left: 16rem;
+        width: calc(100% - 16rem);
+        padding: 25px 30px;
+        min-height: calc(100vh - 70px);
+    }
+
+    /* LOGOUT (SAMA ADMIN STYLE) */
+    .logout-btn {
+        margin-top: 10px;
+        width: 100%;
+        padding: 10px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        color: white;
+        border: none;
+        cursor: pointer;
     }
     </style>
 </head>
 
-<body style="background-color: white;">
+<body>
 
-    <div class="flex">
+    <!-- NAVBAR -->
+    <div class="navbar">
 
-        <aside id="sidebar-siswa">
+        <div class="logo">
+            <i class="fas fa-graduation-cap"></i>
+            SARPAS
+        </div>
 
-            <div class="p-4 text-xl font-bold border-b flex-shrink-0"
-                style="background-color: #CDEDEA; color: #374151;">
-                <i class="fas fa-graduation-cap me-2"></i> Siswa
+        <div class="nav-center">
+            <form action="#" method="GET">
+                <input type="text" placeholder="Cari alat...">
+                <i class="fas fa-search"></i>
+            </form>
+        </div>
+
+        <div class="nav-right">
+            <div class="icon-btn">
+                <i class="fas fa-bell"></i>
             </div>
 
-            <nav class="nav-wrapper space-y-2">
-
-                <a href="{{ route('peminjam.dashboard') }}"
-                    class="block px-3 py-2 rounded transition font-semibold border-l-4 {{ request()->routeIs('peminjam.dashboard') ? '' : 'hover:bg-gray-50' }}"
-                    style="{{ request()->routeIs('peminjam.dashboard') ? 'background-color: #CDEDEA; color: #374151; border-color: #5B9FFF;' : 'color: #374151; border-color: transparent;' }}">
-                    🏠 Dashboard
-                </a>
-
-                <div class="mt-4 pt-2">
-                    <p class="text-xs font-bold uppercase" style="color: #374151; opacity: 0.6; letter-spacing: 1px;">
-                        Menu Utama</p>
-                </div>
-
-                <a href="{{ route('peminjam.alat.index') }}"
-                    class="block px-3 py-2 rounded transition font-semibold border-l-4 {{ request()->routeIs('peminjam.alat.index') ? '' : 'hover:bg-gray-50' }}"
-                    style="{{ request()->routeIs('peminjam.alat.index') ? 'background-color: #CDEDEA; color: #374151; border-color: #5B9FFF;' : 'color: #374151; border-color: transparent;' }}">
-                    📦 Daftar Alat
-                </a>
-
-                <a href="{{ route('peminjam.checkout') }}"
-                    class="block px-3 py-2 rounded transition font-semibold border-l-4 {{ request()->routeIs('peminjam.checkout') ? '' : 'hover:bg-gray-50' }}"
-                    style="{{ request()->routeIs('peminjam.checkout') ? 'background-color: #CDEDEA; color: #374151; border-color: #5B9FFF;' : 'color: #374151; border-color: transparent;' }}">
-                    ➕ Daftar Pinjam
-                </a>
-
-                <a href="{{ route('peminjam.kembalikan') }}"
-                    class="block px-3 py-2 rounded transition font-semibold border-l-4 {{ request()->routeIs('peminjam.kembalikan') ? '' : 'hover:bg-gray-50' }}"
-                    style="{{ request()->routeIs('peminjam.kembalikan') ? 'background-color: #CDEDEA; color: #374151; border-color: #5B9FFF;' : 'color: #374151; border-color: transparent;' }}">
-                    ↩️ Kembalikan Alat
-                </a>
-
-                <a href="{{ route('peminjam.riwayat') }}"
-                    class="block px-3 py-2 rounded transition font-semibold border-l-4 {{ request()->routeIs('peminjam.riwayat') ? '' : 'hover:bg-gray-50' }}"
-                    style="{{ request()->routeIs('peminjam.riwayat') ? 'background-color: #CDEDEA; color: #374151; border-color: #5B9FFF;' : 'color: #374151; border-color: transparent;' }}">
-                    📚 Riwayat Peminjaman
-                </a>
-
-            </nav>
-
-            <div class="p-4 border-t border-gray-200 flex-shrink-0">
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit"
-                        class="w-full py-2 rounded font-bold text-white shadow-sm hover:opacity-90 transition-all"
-                        style="background-color: #5B9FFF;">
-                        <i class="fas fa-sign-out-alt me-1"></i> Logout
-                    </button>
-                </form>
+            <div class="user-menu">
+                <i class="fas fa-user-circle"></i>
+                {{ auth()->user()->name ?? 'User' }}
             </div>
-        </aside>
+        </div>
 
-        <main class="main-content p-8">
-            <div class="w-full">
-                @yield('content')
-            </div>
-        </main>
+    </div>
 
+    <!-- SIDEBAR -->
+    <div id="sidebar-siswa">
+
+        <div class="user-info">
+            <small>Login sebagai</small>
+            <strong>{{ auth()->user()->name ?? 'User' }}</strong>
+        </div>
+
+        <nav class="nav-wrapper">
+
+            <a href="{{ route('peminjam.dashboard') }}"
+                class="nav-item {{ request()->routeIs('peminjam.dashboard') ? 'nav-active' : '' }}">
+                <i class="fas fa-house"></i> Dashboard
+            </a>
+
+            <p class="section-title">Menu Utama</p>
+
+            <a href="{{ route('peminjam.alat.index') }}"
+                class="nav-item {{ request()->routeIs('peminjam.alat.index') ? 'nav-active' : '' }}">
+                <i class="fas fa-box"></i> Daftar Alat
+            </a>
+
+            <a href="{{ route('peminjam.checkout') }}"
+                class="nav-item {{ request()->routeIs('peminjam.checkout') ? 'nav-active' : '' }}">
+                <i class="fas fa-plus-circle"></i> Daftar Pinjam
+            </a>
+
+            <a href="{{ route('peminjam.kembalikan') }}"
+                class="nav-item {{ request()->routeIs('peminjam.kembalikan') ? 'nav-active' : '' }}">
+                <i class="fas fa-rotate-left"></i> Kembalikan Alat
+            </a>
+
+            <a href="{{ route('peminjam.riwayat') }}"
+                class="nav-item {{ request()->routeIs('peminjam.riwayat') ? 'nav-active' : '' }}">
+                <i class="fas fa-clock-rotate-left"></i> Riwayat Peminjaman
+            </a>
+
+        </nav>
+
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <button class="logout-btn">
+                Logout
+            </button>
+        </form>
+
+    </div>
+
+    <!-- CONTENT -->
+    <div class="main-content">
+        @yield('content')
     </div>
 
 </body>

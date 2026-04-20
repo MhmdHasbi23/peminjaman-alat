@@ -1,61 +1,183 @@
 @extends('layouts.admin')
 
-@section('content')
-<div class="container" style="margin-top: 40px; max-width: 600px; font-family: sans-serif;">
-    <div
-        style="background: white; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); padding: 35px; border: 1px solid #e3e6f0;">
-        <h4
-            style="margin-bottom: 25px; color: #3a3b45; font-weight: 700; border-bottom: 2px solid #f8f9fc; padding-bottom: 10px;">
-            Tambah Alat Baru</h4>
+@section('title', 'Tambah Alat')
 
-        <form action="{{ route('admin.alat.store') }}" method="POST">
+@section('content')
+<div style="padding: 30px; font-family: 'Inter', sans-serif; max-width: 700px; margin:auto;">
+
+    {{-- HEADER --}}
+    <div style="margin-bottom: 25px;">
+        <h4 style="font-weight: 800; color: #e5e7eb;">
+            <i class="fas fa-plus-circle me-2" style="color:#60a5fa;"></i>
+            Tambah Alat Baru
+        </h4>
+        <p style="color:#94a3b8; font-size:14px;">
+            Masukkan data alat dengan lengkap dan benar.
+        </p>
+    </div>
+
+    {{-- CARD FORM --}}
+    <div style="
+        background: rgba(255,255,255,0.03);
+        backdrop-filter: blur(14px);
+        border-radius: 20px;
+        border: 1px solid rgba(255,255,255,0.08);
+        padding: 30px;
+    ">
+
+        <form id="formTambahAlat" action="{{ route('admin.alat.store') }}" method="POST">
             @csrf
-            <div style="margin-bottom: 15px;">
-                <label
-                    style="display: block; margin-bottom: 8px; font-size: 13px; font-weight: 700; color: #4e73df; text-transform: uppercase;">Nama
-                    Alat</label>
-                <input type="text" name="nama_alat"
-                    style="width: 100%; padding: 12px; border: 1px solid #d1d3e2; border-radius: 6px;"
-                    placeholder="PC Client / Laptop" required>
+
+            {{-- INPUT --}}
+            <div class="form-group">
+                <label>Nama Alat</label>
+                <input type="text" name="nama_alat" value="{{ old('nama_alat') }}" placeholder="Contoh: Laptop"
+                    required>
             </div>
 
-            <div style="margin-bottom: 15px;">
-                <label
-                    style="display: block; margin-bottom: 8px; font-size: 13px; font-weight: 700; color: #4e73df; text-transform: uppercase;">Kategori</label>
-                <select name="kategori_id"
-                    style="width: 100%; padding: 12px; border: 1px solid #d1d3e2; border-radius: 6px; background: white;"
-                    required>
-                    <option value="" disabled selected>-- Pilih Kategori --</option>
+            <div class="form-group">
+                <label>Kategori</label>
+                <select name="kategori_id" required>
+                    <option value="">-- Pilih Kategori --</option>
                     @foreach($kategoris as $kategori)
-                    <option value="{{ $kategori->id }}">{{ $kategori->nama_kategori }}</option>
+                        <option value="{{ $kategori->id }}"
+                            {{ old('kategori_id') == $kategori->id ? 'selected' : '' }}>
+                            {{ $kategori->nama_kategori }}
+                        </option>
                     @endforeach
                 </select>
             </div>
 
-            <div style="margin-bottom: 15px;">
-                <label
-                    style="display: block; margin-bottom: 8px; font-size: 13px; font-weight: 700; color: #4e73df; text-transform: uppercase;">Spesifikasi</label>
+            <div class="form-group">
+                <label>Spesifikasi</label>
                 <textarea name="spesifikasi" rows="3"
-                    style="width: 100%; padding: 12px; border: 1px solid #d1d3e2; border-radius: 6px;"
-                    placeholder="Contoh: RAM 4GB, Processor 2.0 GHz" required></textarea>
+                    placeholder="RAM 8GB, SSD 256GB" required>{{ old('spesifikasi') }}</textarea>
             </div>
 
-            <div style="margin-bottom: 25px;">
-                <label
-                    style="display: block; margin-bottom: 8px; font-size: 13px; font-weight: 700; color: #4e73df; text-transform: uppercase;">Stok
-                    Alat</label>
-                <input type="number" name="stok" min="0"
-                    style="width: 100%; padding: 12px; border: 1px solid #d1d3e2; border-radius: 6px;" required>
+            <div class="form-group">
+                <label>Stok</label>
+                <input type="number" name="stok" min="0" value="{{ old('stok') }}" required>
             </div>
 
-            <div style="display: flex; gap: 10px;">
-                <button type="submit"
-                    style="flex: 2; background-color: #4e73df; color: white; border: none; padding: 14px; border-radius: 6px; cursor: pointer; font-weight: 700;">Simpan
-                    Alat</button>
-                <a href="{{ route('admin.alat.index') }}"
-                    style="flex: 1; text-align: center; background-color: #eaecf4; color: #333; padding: 14px; border-radius: 6px; text-decoration: none; font-size: 14px; font-weight: 700;">Batal</a>
+            {{-- BUTTON --}}
+            <div style="display:flex; gap:10px; margin-top:20px;">
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-save me-1"></i> Simpan
+                </button>
+
+                <a href="{{ route('admin.alat.index') }}" class="btn-secondary">
+                    Batal
+                </a>
             </div>
+
         </form>
     </div>
 </div>
+
+{{-- STYLE --}}
+<style>
+
+.form-group {
+    margin-bottom: 18px;
+}
+
+.form-group label {
+    display:block;
+    margin-bottom:6px;
+    font-size:12px;
+    color:#60a5fa;
+    font-weight:700;
+    text-transform:uppercase;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width:100%;
+    padding:12px;
+    border-radius:10px;
+    border:1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.04);
+    color:#e5e7eb;
+    outline:none;
+    transition:0.3s;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    border-color:#3b82f6;
+    box-shadow:0 0 0 2px rgba(59,130,246,0.2);
+}
+
+/* BUTTON */
+.btn-primary {
+    flex:2;
+    background: linear-gradient(135deg,#3b82f6,#2563eb);
+    border:none;
+    padding:12px;
+    border-radius:10px;
+    color:white;
+    font-weight:700;
+    cursor:pointer;
+}
+
+.btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow:0 6px 15px rgba(59,130,246,0.3);
+}
+
+.btn-secondary {
+    flex:1;
+    text-align:center;
+    background: rgba(255,255,255,0.05);
+    color:#cbd5f5;
+    padding:12px;
+    border-radius:10px;
+    text-decoration:none;
+    font-weight:600;
+}
+
+.btn-secondary:hover {
+    background: rgba(255,255,255,0.1);
+}
+
+</style>
+@endsection
+
+@section('scripts')
+<script>
+document.getElementById('formTambahAlat').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    Swal.fire({
+        title: 'Simpan Data?',
+        text: 'Pastikan data sudah benar',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3b82f6',
+        cancelButtonColor: '#ef4444',
+        confirmButtonText: 'Ya, Simpan',
+        cancelButtonText: 'Batal'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            this.submit();
+        }
+    });
+});
+
+@if ($errors->any())
+Swal.fire({
+    title: 'Validasi Gagal',
+    html: `
+        <div style="text-align:left;">
+        @foreach ($errors->all() as $error)
+            <div>• {{ $error }}</div>
+        @endforeach
+        </div>
+    `,
+    icon: 'warning'
+});
+@endif
+</script>
 @endsection

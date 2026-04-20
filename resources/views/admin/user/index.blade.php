@@ -1,145 +1,302 @@
 @extends('layouts.admin')
 
 @section('content')
-<div class="container-fluid px-4" style="margin-top: 30px; font-family: 'Inter', 'Segoe UI', sans-serif;">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+<div class="page-wrapper">
+
+    {{-- HEADER --}}
+    <div class="page-header">
         <div>
-            <h4 style="font-weight: 800; color: #1a202c; margin: 0; letter-spacing: -0.5px;">
-                <i class="fas fa-users-cog me-2" style="color: #4e73df;"></i> Manajemen Pengguna
+            <h4>
+                <i class="fas fa-users-cog me-2"></i> Manajemen Pengguna
             </h4>
-            <p style="color: #718096; font-size: 14px; margin-top: 5px;">Kelola hak akses dan informasi akun seluruh
-                staf dan pengguna.</p>
+            <p>Kelola hak akses dan informasi akun seluruh pengguna</p>
         </div>
-    </div>
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <a href="{{ route('admin.user.create') }}" class="btn shadow-sm"
-            style="background: linear-gradient(135deg, #4e73df 0%, #224abe 100%); color: white; border-radius: 10px; padding: 12px 24px; text-decoration: none; font-weight: 700; font-size: 13px; transition: all 0.3s ease; border: none;">
-            <i class="fas fa-plus-circle me-2"></i> Tambah Pengguna
+
+        <a href="{{ route('admin.user.create') }}" class="btn-primary-soft">
+            <i class="fas fa-plus"></i> Tambah
         </a>
     </div>
 
+    {{-- ALERT --}}
     @if(session('success'))
-    <div class="alert border-0 shadow-sm"
-        style="background-color: #def7ec; color: #03543f; border-radius: 12px; padding: 15px 20px; margin-bottom: 25px;"
-        role="alert">
-        <div class="d-flex align-items-center">
-            <i class="fas fa-check-circle me-2"></i>
-            <span style="font-weight: 600;">{{ session('success') }}</span>
-        </div>
+    <div class="alert-success-glass">
+        <i class="fas fa-check-circle me-2"></i>
+        {{ session('success') }}
     </div>
     @endif
 
-    <div
-        style="background: white; border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.04); overflow: hidden; border: 1px solid #e2e8f0;">
-        <table class="table mb-0"
-            style="width: 100%; border-collapse: separate; border-spacing: 0; vertical-align: middle;">
+    {{-- CARD TABLE --}}
+    <div class="card-glass">
+
+        <table class="table-modern">
+
             <thead>
-                <tr style="background-color: #f8fafc;">
-                    <th
-                        style="padding: 20px; text-align: left; color: #4a5568; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid #edf2f7; width: 60px;">
-                        No</th>
-                    <th
-                        style="padding: 20px; text-align: left; color: #4a5568; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid #edf2f7;">
-                        Identitas Pengguna</th>
-                    <th
-                        style="padding: 20px; text-align: left; color: #4a5568; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid #edf2f7;">
-                        Hak Akses (Role)</th>
-                    <th
-                        style="padding: 20px; text-align: center; color: #4a5568; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid #edf2f7; width: 220px;">
-                        Aksi</th>
+                <tr>
+                    <th>No</th>
+                    <th>User</th>
+                    <th>Role</th>
+                    <th class="text-center">Aksi</th>
                 </tr>
             </thead>
+
             <tbody>
                 @foreach($users as $user)
-                <tr style="transition: all 0.2s ease;" onmouseover="this.style.backgroundColor='#fcfdfe'"
-                    onmouseout="this.style.backgroundColor='transparent'">
-                    <td
-                        style="padding: 20px; color: #94a3b8; font-weight: 600; font-size: 14px; border-bottom: 1px solid #f1f5f9;">
+                <tr>
+
+                    {{-- NO --}}
+                    <td>
                         {{ ($users->currentPage() - 1) * $users->perPage() + $loop->iteration }}
                     </td>
-                    <td style="padding: 20px; border-bottom: 1px solid #f1f5f9;">
-                        <div class="d-flex align-items-center">
-                            <div
-                                style="width: 40px; height: 40px; background: #f0f7ff; color: #4e73df; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 700; margin-right: 15px; flex-shrink: 0;">
+
+                    {{-- USER --}}
+                    <td>
+                        <div class="user-box">
+                            <div class="avatar">
                                 {{ strtoupper(substr($user->name, 0, 1)) }}
                             </div>
+
                             <div>
-                                <div style="font-weight: 700; color: #1e293b; font-size: 15px;">{{ $user->name }}</div>
-                                <div style="color: #64748b; font-size: 13px;"><i class="far fa-envelope me-1"></i>
-                                    {{ $user->email }}</div>
+                                <div class="name">{{ $user->name }}</div>
+                                <div class="email">{{ $user->email }}</div>
                             </div>
                         </div>
                     </td>
-                    <td style="padding: 20px; border-bottom: 1px solid #f1f5f9;">
+
+                    {{-- ROLE --}}
+                    <td>
                         @php
-                        $roleConfig = [
-                        'admin' => ['bg' => '#fee2e2', 'text' => '#991b1b', 'icon' => 'fa-user-shield'],
-                        'petugas' => ['bg' => '#fef3c7', 'text' => '#92400e', 'icon' => 'fa-user-tie'],
-                        'peminjam'=> ['bg' => '#e0e7ff', 'text' => '#3730a3', 'icon' => 'fa-user'],
+                        $role = [
+                            'admin' => 'role-admin',
+                            'petugas' => 'role-petugas',
+                            'peminjam' => 'role-user'
                         ];
-                        $cfg = $roleConfig[$user->role] ?? ['bg' => '#f3f4f6', 'text' => '#374151', 'icon' =>
-                        'fa-user'];
                         @endphp
-                        <span
-                            style="background-color: {{ $cfg['bg'] }}; color: {{ $cfg['text'] }}; padding: 6px 14px; border-radius: 8px; font-size: 11px; font-weight: 800; text-transform: uppercase; display: inline-flex; align-items: center; white-space: nowrap;">
-                            <i class="fas {{ $cfg['icon'] }} me-2"></i> {{ $user->role }}
+
+                        <span class="role-badge {{ $role[$user->role] ?? '' }}">
+                            {{ $user->role }}
                         </span>
                     </td>
-                    <td style="padding: 20px; border-bottom: 1px solid #f1f5f9;">
-                        <div style="display: flex; justify-content: center; align-items: center; gap: 10px;">
-                            <a href="{{ route('admin.user.edit', $user->id) }}" class="btn-edit"
-                                style="display: inline-flex; align-items: center; background-color: white; color: #4e73df; border: 1px solid #e2e8f0; padding: 8px 16px; border-radius: 8px; text-decoration: none; font-size: 12px; font-weight: 700; transition: all 0.2s;">
-                                <i class="fas fa-edit me-2"></i> Edit
+
+                    {{-- AKSI --}}
+                    <td class="text-center">
+                        <div class="action-group">
+
+                            <a href="{{ route('admin.user.edit', $user->id) }}" class="btn-action edit">
+                                <i class="fas fa-edit"></i>
                             </a>
-                            <form action="{{ route('admin.user.destroy', $user->id) }}" method="POST"
-                                onsubmit="return confirm('Hapus pengguna ini? Tindakan ini tidak dapat dibatalkan.')"
-                                style="margin:0;">
+
+                            <form action="{{ route('admin.user.destroy', $user->id) }}" method="POST">
                                 @csrf @method('DELETE')
-                                <button type="submit" class="btn-delete"
-                                    style="display: inline-flex; align-items: center; background-color: white; color: #e74a3b; border: 1px solid #fee2e2; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 700; transition: all 0.2s;">
-                                    <i class="fas fa-trash-alt me-2"></i> Hapus
+                                <button class="btn-action delete"
+                                    onclick="return confirm('Hapus user ini?')">
+                                    <i class="fas fa-trash"></i>
                                 </button>
                             </form>
+
                         </div>
                     </td>
+
                 </tr>
                 @endforeach
             </tbody>
+
         </table>
+
     </div>
 
-    <div class="mt-4 d-flex justify-content-between align-items-center" style="padding: 0 5px;">
-        <p style="color: #94a3b8; font-size: 13px; font-weight: 500;">
-            Menampilkan {{ $users->firstItem() }} sampai {{ $users->lastItem() }} dari {{ $users->total() }} pengguna
-        </p>
-        <div>
-            {{ $users->links() }}
-        </div>
+    {{-- PAGINATION --}}
+    <div class="pagination-wrapper">
+        <span>
+            {{ $users->firstItem() }} - {{ $users->lastItem() }} dari {{ $users->total() }}
+        </span>
+
+        {{ $users->links() }}
     </div>
+
 </div>
 
+{{-- STYLE --}}
 <style>
-.btn-edit:hover {
-    background-color: #f8fafc !important;
-    border-color: #4e73df !important;
-    box-shadow: 0 4px 6px -1px rgba(78, 115, 223, 0.1);
+
+/* WRAPPER */
+.page-wrapper {
+    width: 100%;
+    color: #cbd5f5;
 }
 
-.btn-delete:hover {
-    background-color: #fff1f0 !important;
-    border-color: #e74a3b !important;
-    box-shadow: 0 4px 6px -1px rgba(231, 74, 59, 0.1);
+/* HEADER */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
 }
 
-.pagination {
-    margin-bottom: 0;
+.page-header h4 {
+    font-weight: 700;
+    margin: 0;
 }
 
-.page-item.active .page-link {
-    background: #4e73df !important;
+.page-header p {
+    font-size: 13px;
+    color: #94a3b8;
+}
+
+/* BUTTON */
+.btn-primary-soft {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    padding: 10px 18px;
+    border-radius: 10px;
+    color: white;
+    font-size: 13px;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+/* ALERT */
+.alert-success-glass {
+    background: rgba(34,197,94,0.15);
+    border: 1px solid rgba(34,197,94,0.3);
+    color: #6ee7b7;
+    padding: 12px 16px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+
+/* CARD */
+.card-glass {
+    background: rgba(255,255,255,0.03);
+    border-radius: 20px;
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.08);
+    overflow: hidden;
+}
+
+/* TABLE */
+.table-modern {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table-modern th {
+    padding: 16px;
+    text-align: left;
+    font-size: 11px;
+    color: #64748b;
+    text-transform: uppercase;
+}
+
+.table-modern td {
+    padding: 16px;
+    border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+.table-modern tr:hover {
+    background: rgba(59,130,246,0.08);
+}
+
+/* USER */
+.user-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    background: rgba(59,130,246,0.2);
+    color: #60a5fa;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+}
+
+.name {
+    font-weight: 700;
+    color: #e5e7eb;
+}
+
+.email {
+    font-size: 13px;
+    color: #94a3b8;
+}
+
+/* ROLE */
+.role-badge {
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.role-admin {
+    background: rgba(239,68,68,0.2);
+    color: #f87171;
+}
+
+.role-petugas {
+    background: rgba(251,191,36,0.2);
+    color: #fbbf24;
+}
+
+.role-user {
+    background: rgba(59,130,246,0.2);
+    color: #60a5fa;
+}
+
+/* ACTION */
+.action-group {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.btn-action {
+    width: 36px;
+    height: 36px;
     border-radius: 8px;
     border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: 0.2s;
 }
+
+.btn-action.edit {
+    background: rgba(59,130,246,0.2);
+    color: #60a5fa;
+}
+
+.btn-action.edit:hover {
+    background: #3b82f6;
+    color: white;
+}
+
+.btn-action.delete {
+    background: rgba(239,68,68,0.2);
+    color: #f87171;
+}
+
+.btn-action.delete:hover {
+    background: #ef4444;
+    color: white;
+}
+
+/* PAGINATION */
+.pagination-wrapper {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    color: #94a3b8;
+    font-size: 13px;
+}
+
 </style>
+
 @endsection

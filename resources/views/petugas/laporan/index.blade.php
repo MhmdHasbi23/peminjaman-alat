@@ -1,142 +1,250 @@
 @extends('layouts.petugas')
 
 @section('content')
-<div class="container-fluid px-4" style="margin-top: 30px; font-family: 'Inter', 'Segoe UI', sans-serif;">
+<div class="container-fluid px-4" style="margin-top: 30px; font-family: 'Inter', sans-serif;">
 
+    <!-- HEADER -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h4 style="font-weight: 800; color: #1e293b; margin: 0; letter-spacing: -0.5px;">
-                <i class="fas fa-file-contract text-primary me-2"></i> Laporan Pengembalian Alat
+            <h4 style="font-weight:800; color:#e5e7eb;">
+                <i class="fas fa-file-contract me-2 text-primary"></i> Laporan Pengembalian Alat
             </h4>
-            <p style="color: #64748b; font-size: 0.9rem; margin-top: 5px;">Rekapitulasi dan audit data transaksi yang
-                telah diselesaikan.</p>
+            <p style="color:#94a3b8; font-size:0.9rem;">
+                Rekapitulasi transaksi yang telah diselesaikan
+            </p>
         </div>
     </div>
 
-    <div
-        style="background: white; padding: 25px; border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.04); border: 1px solid #e2e8f0; margin-bottom: 25px;">
-        <form action="{{ route('petugas.laporan.index') }}" method="GET" class="row g-3 align-items-end">
-            <div class="col-md-3">
-                <label
-                    style="font-size: 11px; font-weight: 800; color: #4e73df; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 8px;">Mulai
-                    Tanggal</label>
-                <input type="date" name="tgl_mulai" class="form-control" value="{{ $tgl_mulai }}"
-                    style="border-radius: 8px; border: 1px solid #d1d3e2; padding: 10px;">
-            </div>
-            <div class="col-md-3">
-                <label
-                    style="font-size: 11px; font-weight: 800; color: #4e73df; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 8px;">Sampai
-                    Tanggal</label>
-                <input type="date" name="tgl_selesai" class="form-control" value="{{ $tgl_selesai }}"
-                    style="border-radius: 8px; border: 1px solid #d1d3e2; padding: 10px;">
-            </div>
-            <div class="col-md-6">
-                <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-primary flex-grow-1"
-                        style="background: #4e73df; font-weight: 700; border-radius: 8px; padding: 10px; border: none;">
-                        <i class="fas fa-filter me-2"></i> Terapkan Filter
-                    </button>
-                    <a href="{{ route('petugas.laporan.index') }}" class="btn btn-light"
-                        style="font-weight: 700; border-radius: 8px; padding: 10px; border: 1px solid #d1d3e2; color: #4e73df;">
-                        <i class="fas fa-undo"></i>
-                    </a>
-                    <a href="{{ route('petugas.laporan.cetak', ['tgl_mulai' => $tgl_mulai, 'tgl_selesai' => $tgl_selesai]) }}"
-                        target="_blank" class="btn btn-danger"
-                        style="font-weight: 700; border-radius: 8px; padding: 10px 20px; border: none; background: #e74a3b;">
-                        <i class="fas fa-file-pdf me-2"></i> Cetak PDF
-                    </a>
+    <!-- FILTER -->
+    <div style="
+    background: rgba(15,23,42,0.65);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius:18px;
+    overflow:hidden;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+">
+
+        {{-- ================= HEADER ================= --}}
+        <div style="
+        padding:18px 22px;
+        border-bottom:1px solid rgba(255,255,255,0.06);
+        background: rgba(2,6,23,0.4);
+    ">
+            <h5 style="margin:0; font-weight:800; color:#e2e8f0;">
+                📊 Filter Laporan
+            </h5>
+            <p style="margin:4px 0 0; font-size:12px; color:#94a3b8;">
+                Gunakan filter untuk menampilkan data berdasarkan rentang waktu
+            </p>
+        </div>
+
+        {{-- ================= FORM ================= --}}
+        <form action="{{ route('petugas.laporan.index') }}" method="GET">
+
+            <div style="padding:22px;">
+
+                {{-- GRID INPUT --}}
+                <div class="row g-3">
+
+                    {{-- MULAI --}}
+                    <div class="col-md-4">
+                        <label style="font-size:11px; color:#94a3b8; font-weight:600;">
+                            Mulai Tanggal
+                        </label>
+                        <input type="date" name="tgl_mulai" value="{{ $tgl_mulai }}" style="
+                            width:100%;
+                            margin-top:8px;
+                            padding:11px 12px;
+                            border-radius:12px;
+                            background: rgba(2,6,23,0.9);
+                            border:1px solid rgba(255,255,255,0.08);
+                            color:#e2e8f0;
+                            outline:none;
+                        ">
+                    </div>
+
+                    {{-- SAMPAI --}}
+                    <div class="col-md-4">
+                        <label style="font-size:11px; color:#94a3b8; font-weight:600;">
+                            Sampai Tanggal
+                        </label>
+                        <input type="date" name="tgl_selesai" value="{{ $tgl_selesai }}" style="
+                            width:100%;
+                            margin-top:8px;
+                            padding:11px 12px;
+                            border-radius:12px;
+                            background: rgba(2,6,23,0.9);
+                            border:1px solid rgba(255,255,255,0.08);
+                            color:#e2e8f0;
+                            outline:none;
+                        ">
+                    </div>
+
+                    {{-- ACTION PANEL --}}
+                    <div class="col-md-4">
+
+                        <label style="font-size:11px; color:#94a3b8; font-weight:600;">
+                            Aksi
+                        </label>
+
+                        <div style="
+                        margin-top:8px;
+                        display:flex;
+                        gap:10px;
+                    ">
+
+                            {{-- FILTER BUTTON --}}
+                            <button type="submit" style="
+                                flex:1;
+                                padding:11px;
+                                border:none;
+                                border-radius:12px;
+                                background:linear-gradient(135deg,#3b82f6,#2563eb);
+                                color:white;
+                                font-weight:700;
+                                display:flex;
+                                justify-content:center;
+                                align-items:center;
+                                gap:8px;
+                                transition:0.2s;
+                                cursor:pointer;
+                            " onmouseover="this.style.transform='translateY(-2px)'"
+                                onmouseout="this.style.transform='translateY(0)'">
+                                <i class="fas fa-filter"></i>
+                                Filter
+                            </button>
+
+                            {{-- RESET --}}
+                            <a href="{{ route('petugas.laporan.index') }}" style="
+                                width:42px;
+                                height:42px;
+                                display:flex;
+                                align-items:center;
+                                justify-content:center;
+                                border-radius:12px;
+                                background: rgba(2,6,23,0.9);
+                                border:1px solid rgba(255,255,255,0.08);
+                                color:#94a3b8;
+                                text-decoration:none;
+                                transition:0.2s;
+                            " onmouseover="this.style.background='rgba(255,255,255,0.05)'"
+                                onmouseout="this.style.background='rgba(2,6,23,0.9)'">
+                                <i class="fas fa-rotate-left"></i>
+                            </a>
+
+                            {{-- PDF --}}
+                            <a href="{{ route('petugas.laporan.cetak', ['tgl_mulai'=>$tgl_mulai,'tgl_selesai'=>$tgl_selesai]) }}"
+                                target="_blank" style="
+                                padding:11px 14px;
+                                border-radius:12px;
+                                background:linear-gradient(135deg,#ef4444,#dc2626);
+                                color:white;
+                                font-weight:700;
+                                text-decoration:none;
+                                display:flex;
+                                align-items:center;
+                                gap:8px;
+                                transition:0.2s;
+                            " onmouseover="this.style.transform='translateY(-2px)'"
+                                onmouseout="this.style.transform='translateY(0)'">
+                                <i class="fas fa-file-pdf"></i>
+                                PDF
+                            </a>
+
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </form>
     </div>
 
-    <div
-        style="background: white; border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.04); border: 1px solid #e2e8f0; overflow: hidden;">
-        <table class="table mb-0"
-            style="width: 100%; border-collapse: separate; border-spacing: 0; vertical-align: middle;">
+    <!-- TABLE -->
+    <div style="
+        background: rgba(15,23,42,0.7);
+        backdrop-filter: blur(12px);
+        border-radius:16px;
+        border:1px solid rgba(255,255,255,0.08);
+        overflow:hidden;
+    ">
+
+        <table class="table mb-0" style="color:#e5e7eb; width:100%; table-layout: fixed;">
             <thead>
-                <tr style="background-color: #f8fafc;">
-                    <th
-                        style="padding: 20px; text-align: left; color: #475569; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid #edf2f7; width: 50px;">
-                        NO</th>
-                    <th
-                        style="padding: 20px; text-align: left; color: #475569; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid #edf2f7;">
-                        Peminjam & Kode</th>
-                    <th
-                        style="padding: 20px; text-align: left; color: #475569; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid #edf2f7;">
-                        Rincian Alat</th>
-                    <th
-                        style="padding: 20px; text-align: center; color: #475569; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid #edf2f7;">
-                        Tgl Kembali</th>
-                    <th
-                        style="padding: 20px; text-align: right; color: #475569; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid #edf2f7;">
-                        Denda</th>
+                <tr style="background: rgba(255,255,255,0.03);">
+                    <th style="width:5%; padding:20px;">NO</th>
+                    <th style="width:20%;">Peminjam</th>
+                    <th style="width:35%;">Alat</th>
+                    <th style="width:20%;" class="text-center">Tanggal</th>
+                    <th style="width:20%;" class="text-end">Denda</th>
                 </tr>
             </thead>
+
             <tbody>
                 @php $total_denda = 0; @endphp
+
                 @forelse($laporans as $l)
-                <tr style="transition: all 0.2s ease;">
-                    <td style="padding: 20px; color: #94a3b8; font-weight: 700; border-bottom: 1px solid #f1f5f9;">
-                        {{ $loop->iteration }}</td>
-                    <td style="padding: 20px; border-bottom: 1px solid #f1f5f9;">
-                        <span
-                            style="display: block; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #4e73df; font-weight: 800;">#{{ $l->kode_peminjaman }}</span>
-                        <span
-                            style="font-weight: 700; color: #1e293b; font-size: 14px;">{{ $l->user->name ?? 'User Terhapus' }}</span>
+                <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+
+                    <td style="padding:20px;">{{ $loop->iteration }}</td>
+
+                    <td>
+                        <div style="font-weight:700; color:#e5e7eb;">
+                            {{ $l->user->name ?? 'User' }}
+                        </div>
+                        <small style="color:#60a5fa;">#{{ $l->kode_peminjaman }}</small>
                     </td>
-                    <td style="padding: 20px; border-bottom: 1px solid #f1f5f9;">
+
+                    <td style="word-wrap: break-word;">
                         @foreach($l->detailPeminjaman as $detail)
-                        <div
-                            style="font-size: 13px; color: #475569; margin-bottom: 4px; display: flex; align-items: center;">
-                            <i class="fas fa-caret-right text-primary me-2" style="font-size: 10px;"></i>
-                            {{ $detail->alat->nama_alat ?? 'Alat Dihapus' }}
-                            <span class="badge ms-2"
-                                style="background: #f1f5f9; color: #475569; border-radius: 4px; font-size: 10px;">{{ $detail->jumlah }}
-                                unit</span>
+                        <div style="font-size:13px; color:#94a3b8; margin-bottom:3px;">
+                            • {{ $detail->alat->nama_alat ?? '-' }} ({{ $detail->jumlah }})
                         </div>
                         @endforeach
                     </td>
-                    <td style="padding: 20px; text-align: center; border-bottom: 1px solid #f1f5f9;">
-                        <div
-                            style="font-size: 13px; font-weight: 700; color: #1e293b; background: #f8fafc; padding: 6px 10px; border-radius: 8px; display: inline-block; border: 1px solid #edf2f7;">
+
+                    <td class="text-center">
+                        <span style="background:#020617; padding:6px 10px; border-radius:8px;">
                             {{ \Carbon\Carbon::parse($l->tgl_kembali_real)->format('d/m/Y') }}
-                        </div>
+                        </span>
                     </td>
-                    <td style="padding: 20px; text-align: right; border-bottom: 1px solid #f1f5f9;">
-                        <span
-                            style="font-weight: 800; color: {{ $l->denda > 0 ? '#e74a3b' : '#1cc88a' }}; font-size: 14px;">
+
+                    <td class="text-end">
+                        <span style="
+                            font-weight:800;
+                            color: {{ $l->denda > 0 ? '#f87171' : '#22c55e' }};
+                        ">
                             Rp {{ number_format($l->denda, 0, ',', '.') }}
                         </span>
                     </td>
+
                 </tr>
+
                 @php $total_denda += $l->denda; @endphp
+
                 @empty
                 <tr>
-                    <td colspan="5" style="padding: 80px; text-align: center;">
-                        <div style="color: #cbd5e1; font-size: 3rem; margin-bottom: 15px;">
-                            <i class="fas fa-folder-open"></i>
-                        </div>
-                        <h6 style="color: #1e293b; font-weight: 800;">Tidak Ada Data</h6>
-                        <p style="color: #94a3b8; font-size: 14px;">Tidak ditemukan transaksi selesai untuk periode yang
-                            dipilih.</p>
+                    <td colspan="5" style="text-align:center; padding:60px; color:#64748b;">
+                        Tidak ada data
                     </td>
                 </tr>
                 @endforelse
             </tbody>
+
             @if($laporans->count() > 0)
             <tfoot>
-                <tr style="background-color: #f8fafc;">
-                    <td colspan="4"
-                        style="padding: 25px; text-align: right; font-weight: 800; color: #1e293b; font-size: 13px; text-transform: uppercase; letter-spacing: 1px;">
-                        Total Pendapatan Denda:</td>
-                    <td style="padding: 25px; text-align: right; font-weight: 900; color: #e74a3b; font-size: 18px;">
+                <tr style="background: rgba(255,255,255,0.03);">
+                    <td colspan="4" class="text-end" style="padding:20px;">
+                        Total Denda
+                    </td>
+                    <td class="text-end" style="padding:20px; color:#f87171; font-weight:900;">
                         Rp {{ number_format($total_denda, 0, ',', '.') }}
                     </td>
                 </tr>
             </tfoot>
             @endif
+
         </table>
     </div>
+
 </div>
 @endsection

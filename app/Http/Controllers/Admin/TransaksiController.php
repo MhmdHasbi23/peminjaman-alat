@@ -117,10 +117,11 @@ class TransaksiController extends Controller
     {
         try {
             DB::beginTransaction();
-            $peminjaman = Peminjaman::with('detailPeminjaman.alat')->findOrFail($id);
 
-            // Jika status disetujui (sedang dipinjam), kembalikan stok sebelum dihapus
-            if ($peminjaman->status == 'disetujui') {
+            $peminjaman = Peminjaman::with(['detailPeminjaman.alat', 'pengembalian'])->findOrFail($id);
+
+            // 1. Kembalikan Stok Alat (jika status disetujui)
+            if ($peminjaman->status == 'disetujui' || $peminjaman->status == 'dipinjam') {
                 foreach ($peminjaman->detailPeminjaman as $detail) {
                     if ($detail->alat) {
                         $detail->alat->increment('stok', $detail->jumlah);
@@ -128,8 +129,17 @@ class TransaksiController extends Controller
                 }
             }
 
+            // 2. HAPUS DATA DI TABEL PENGEMBALIAN (Penyebab Error #1451)
+            // Kita hapus dulu data di tabel pengembalians yang punya peminjaman_id ini
+            DB::table('pengembalians')->where('peminjaman_id', $id)->delete();
+
+            // 3. HAPUS DATA DI TABEL DETAIL PEMINJAMAN
+            $peminjaman->detailPeminjaman()->delete();
+
+            // 4. BARU HAPUS DATA UTAMA (PEMINJAMAN)
             $peminjaman->delete();
 
+            // 5. Log Aktivitas
             ActivityLog::create([
                 'user_id' => auth()->id(),
                 'aktivitas' => 'Hapus Transaksi',
@@ -138,7 +148,7 @@ class TransaksiController extends Controller
             ]);
 
             DB::commit();
-            return redirect()->route('admin.peminjaman.index')->with('success', 'Data transaksi berhasil dihapus.');
+            return redirect()->route('admin.peminjaman.index')->with('success', 'Transaksi dan data terkait berhasil dihapus.');
 
         } catch (\Exception $e) {
             DB::rollback();
